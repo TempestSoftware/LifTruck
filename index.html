@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MK Logistics Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-blue-900 text-white p-4 flex justify-between shadow-lg">
+        <h1 class="font-bold text-xl">MK LOGISTICS</h1>
+        <div>
+            <button onclick="showSection('client')" class="px-3 py-1 hover:bg-blue-700 rounded">Book Truck</button>
+            <button onclick="showSection('driver')" class="px-3 py-1 hover:bg-blue-700 rounded">Join as Driver</button>
+        </div>
+    </nav>
+
+    <section id="client-section" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Book Your Move</h2>
+        <label class="block mb-2">Select Truck Type</label>
+        <select id="truck-type" onchange="updateQuote()" class="w-full p-2 border rounded mb-4">
+            <option value="0">-- Select --</option>
+            <option value="3000">Small Pickup (3-Ton)</option>
+            <option value="7000">Medium Truck (7-Ton)</option>
+            <option value="15000">Large FH/Lorry</option>
+        </select>
+
+        <input type="text" id="pickup" placeholder="Pickup Location" class="w-full p-2 border rounded mb-4">
+        <input type="text" id="destination" placeholder="Destination" class="w-full p-2 border rounded mb-4">
+        
+        <div class="bg-blue-50 p-4 rounded-lg mb-4 text-center">
+            <span class="text-gray-600">Estimated Quote:</span>
+            <div class="text-3xl font-bold text-blue-900">KES <span id="price-display">0</span></div>
+        </div>
+
+        <button onclick="sendBooking()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Book via WhatsApp</button>
+    </section>
+
+    <section id="driver-section" class="hidden max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Driver Application</h2>
+        <input type="text" id="driver-name" placeholder="Full Name" class="w-full p-2 border rounded mb-4">
+        <input type="text" id="driver-phone" placeholder="Phone Number" class="w-full p-2 border rounded mb-4">
+        <input type="text" id="driver-id" placeholder="ID Number" class="w-full p-2 border rounded mb-4">
+        <textarea id="driver-docs" placeholder="Link to Google Drive with ID & License photos" class="w-full p-2 border rounded mb-4"></textarea>
+        
+        <button onclick="applyAsDriver()" class="w-full bg-blue-900 text-white py-3 rounded-lg font-bold">Submit Application</button>
+    </section>
+
+    <script>
+        /* [INDEX 4: LOGIC FUNCTIONS] 
+           JOB: The 'Brain' that handles math and messaging.
+           PREVENT CRASHING: Ensure phone numbers are hardcoded correctly below. */
+        
+        const MK_PHONE = "2547XXXXXXXX"; // PUT MK'S NUMBER HERE
+
+        function showSection(section) {
+            document.getElementById('client-section').classList.add('hidden');
+            document.getElementById('driver-section').classList.add('hidden');
+            document.getElementById(section + '-section').classList.remove('hidden');
+        }
+
+        function updateQuote() {
+            const basePrice = document.getElementById('truck-type').value;
+            document.getElementById('price-display').innerText = parseInt(basePrice).toLocaleString();
+        }
+
+        function sendBooking() {
+            const truck = document.getElementById('truck-type').options[document.getElementById('truck-type').selectedIndex].text;
+            const pickup = document.getElementById('pickup').value;
+            const dest = document.getElementById('destination').value;
+            const price = document.getElementById('price-display').innerText;
+
+            const message = `Hello MK, I want to book a ${truck} from ${pickup} to ${dest}. Quote: KES ${price}`;
+            window.open(`https://wa.me/${MK_PHONE}?text=${encodeURIComponent(message)}`);
+        }
+
+        function applyAsDriver() {
+            const name = document.getElementById('driver-name').value;
+            const docs = document.getElementById('driver-docs').value;
+            const message = `DRIVER APPLICATION: Name: ${name}. Docs: ${docs}`;
+            window.open(`https://wa.me/${MK_PHONE}?text=${encodeURIComponent(message)}`);
+        }
+    </script>
+</body>
+</html>
