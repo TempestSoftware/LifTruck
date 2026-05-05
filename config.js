@@ -34,6 +34,14 @@ export const initialDrivers = [
         name: "John Kariuki", 
         vehicle: "Toyota Probox", 
         plate: "KCP 442Z", 
+        class: "small", 
+        status: "Available" 
+    },
+    { 
+        id: 1, 
+        name: "John Kariuki", 
+        vehicle: "Toyota Probox", 
+        plate: "KCP 442Z", 
         class: "medium", 
         status: "Available" 
     },
