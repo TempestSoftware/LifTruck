@@ -3,81 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifTruck | Driver Registration</title>
+    <title>LifTruck | Smart Logistics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .purple-gradient { background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); }
         .input-field { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.2s; }
         .input-field:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
+        .tab-active { border-bottom: 4px solid #7c3aed; color: #4c1d95; }
     </style>
 </head>
 <body class="bg-gray-50">
 
-    <header class="bg-white p-4 shadow-sm">
+    <header class="bg-white p-4 shadow-sm sticky top-0 z-50">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="bg-purple-900 text-white p-2 rounded-lg font-bold">LT</div>
                 <span class="text-xl font-black text-purple-900 uppercase tracking-tighter">LifTruck</span>
             </div>
-            <span class="text-sm font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">Driver Portal</span>
+            <div class="flex space-x-4 text-sm font-bold uppercase tracking-widest text-gray-400">
+                <button id="tabBook" class="pb-1 tab-active">Client</button>
+                <button id="tabDrive" class="pb-1">Driver</button>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-6">
+    <section id="clientPortal" class="max-w-4xl mx-auto p-6">
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
-            <div class="purple-gradient p-8 text-white">
-                <h1 class="text-2xl font-bold">Join the Fleet</h1>
-                <p class="text-purple-100 mt-2">Complete the form below to start your application.</p>
+            <div class="purple-gradient p-8 text-white text-center">
+                <h1 class="text-2xl font-bold">Move Goods with Ease</h1>
+                <p class="text-purple-100 mt-2">Instant rates. Verified drivers.</p>
             </div>
 
-            <form id="driverOnboardingForm" class="p-8 space-y-6">
+            <div class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label>
-                        <input type="text" id="name" class="input-field" placeholder="Emeriziana Furaha" required>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pickup Location</label>
+                        <input type="text" id="pickup" class="input-field" placeholder="e.g., Thika Town">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Email Address</label>
-                        <input type="email" id="email" class="input-field" placeholder="name@work.com" required>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number</label>
-                        <input type="tel" id="phone" class="input-field" placeholder="0712345678" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vehicle Number Plate</label>
-                        <input type="text" id="plate" class="input-field" placeholder="KCP 123X" required>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Destination</label>
+                        <input type="text" id="dropoff" class="input-field" placeholder="e.g., Juja">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vehicle Type</label>
-                    <select id="vehicleType" class="input-field">
-                        <option value="Bike/Small Car">Motorbike / Small Car (Up to 50kg)</option>
-                        <option value="Probox/Van">Probox / Van (Up to 500kg)</option>
-                        <option value="Pickup/Canter">Pickup / Light Canter (Up to 2 Tons)</option>
-                        <option value="Lorry/FH">Heavy Lorry / FH (Over 2 Tons)</option>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estimated Distance (KM)</label>
+                    <input type="number" id="distanceInput" class="input-field" placeholder="Enter distance in KM">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cargo Weight Class</label>
+                    <select id="weightSelect" class="input-field">
+                        <option value="small">Small (Bike/Probox - Up to 50kg)</option>
+                        <option value="medium">Medium (Van/Pickup - Up to 500kg)</option>
+                        <option value="large">Large (Light Truck - Up to 2 Tons)</option>
+                        <option value="heavy">Heavy (Lorry - Over 2 Tons)</option>
                     </select>
                 </div>
 
-                <div class="bg-purple-50 p-4 rounded-xl border border-purple-200">
-                    <div class="flex items-start space-x-3">
-                        <input type="checkbox" id="terms" class="mt-1 w-5 h-5 accent-purple-600" required>
-                        <label for="terms" class="text-xs text-gray-600">
-                            I agree to provide original documents for verification. I understand that I must submit my <b>ID, Driving License, NTSA Inspection, Insurance, and Logbook</b> via WhatsApp to complete my registration.
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full purple-gradient text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-purple-200 transition transform hover:-translate-y-1">
-                    Submit & Send Documents
+                <button id="calculateBtn" class="w-full purple-gradient text-white font-bold py-4 rounded-2xl shadow-lg">
+                    Check Rates & Available Drivers
                 </button>
-            </form>
+            </div>
         </div>
-    </main>
+
+        <div id="driverList" class="mt-8 space-y-4"></div>
+    </section>
+
+    <section id="driverPortal" class="max-w-4xl mx-auto p-6 hidden">
+        </section>
 
     <script type="module" src="app.js"></script>
 </body>
