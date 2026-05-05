@@ -1,36 +1,58 @@
-document.getElementById('driverOnboardingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+import { PRICING_LOGIC, initialDrivers } from './config.js';
 
-    // 1. Capture the data
-    const name = document.getElementById('name').value;
-    const plate = document.getElementById('plate').value;
-    const vehicle = document.getElementById('vehicleType').value;
-    const phone = document.getElementById('phone').value;
+// --- Tab Switching Logic ---
+const tabBook = document.getElementById('tabBook');
+const tabDrive = document.getElementById('tabDrive');
+const clientPortal = document.getElementById('clientPortal');
+const driverPortal = document.getElementById('driverPortal');
 
-    // 2. Define the MK WhatsApp Number (Change this to MK's real number)
-    const mkNumber = "254712345678"; 
+tabDrive.onclick = () => {
+    clientPortal.classList.add('hidden');
+    driverPortal.classList.remove('hidden');
+    tabDrive.classList.add('tab-active');
+    tabBook.classList.remove('tab-active');
+};
 
-    // 3. Create the pre-filled message with a checklist
-    const message = `*NEW DRIVER APPLICATION*%0A` +
-                    `----------------------------%0A` +
-                    `*Name:* ${name}%0A` +
-                    `*Phone:* ${phone}%0A` +
-                    `*Plate:* ${plate}%0A` +
-                    `*Vehicle:* ${vehicle}%0A%0A` +
-                    `*ATTACHING DOCUMENTS NOW:*%0A` +
-                    `[ ] National ID (Front/Back)%0A` +
-                    `[ ] Driving License%0A` +
-                    `[ ] NTSA Inspection Certificate%0A` +
-                    `[ ] Vehicle Insurance%0A` +
-                    `[ ] Vehicle Logbook%0A` +
-                    `----------------------------%0A` +
-                    `Please review my application for LifTruck.`;
+tabBook.onclick = () => {
+    driverPortal.classList.add('hidden');
+    clientPortal.classList.remove('hidden');
+    tabBook.classList.add('tab-active');
+    tabDrive.classList.remove('tab-active');
+};
 
-    // 4. Open WhatsApp
-    const whatsappUrl = `https://wa.me/${mkNumber}?text=${message}`;
-    
-    // Optional: Alert the user before redirecting
-    alert("Application details saved! Redirecting you to WhatsApp to send your documents to MK.");
-    
-    window.location.href = whatsappUrl;
+// --- Client Booking Logic ---
+document.getElementById('calculateBtn').addEventListener('click', () => {
+    const distance = parseFloat(document.getElementById('distanceInput').value);
+    const weightClass = document.getElementById('weightSelect').value;
+    const driverList = document.getElementById('driverList');
+
+    if (!distance || distance <= 0) {
+        alert("Please enter a valid distance.");
+        return;
+    }
+
+    // 1. Calculate Price
+    const rates = PRICING_LOGIC[weightClass];
+    const totalPrice = rates.base + (distance * rates.perKm);
+
+    // 2. Filter Drivers
+    const available = initialDrivers.filter(d => d.class === weightClass && d.status === "Available");
+
+    // 3. Render Results
+    driverList.innerHTML = `
+        <h3 class="text-lg font-bold text-purple-900 mb-4">Estimated Quote: KES ${Math.ceil(totalPrice)}</h3>
+        ${available.map(driver => `
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-purple-100 flex justify-between items-center">
+                <div>
+                    <p class="text-xs font-bold text-purple-500 uppercase">${driver.vehicle}</p>
+                    <h4 class="text-xl font-bold text-gray-800">${driver.name}</h4>
+                    <p class="text-sm text-gray-500">Plate: ${driver.plate}</p>
+                </div>
+                <button onclick="window.location.href='https://wa.me/2547XXXXXXXX?text=I want to book ${driver.name} for a trip from ${document.getElementById('pickup').value} to ${document.getElementById('dropoff').value} for KES ${Math.ceil(totalPrice)}'" 
+                        class="bg-purple-100 text-purple-700 font-bold px-6 py-2 rounded-xl hover:bg-purple-700 hover:text-white transition">
+                    Book Now
+                </button>
+            </div>
+        `).join('')}
+    `;
 });
