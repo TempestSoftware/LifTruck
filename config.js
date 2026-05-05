@@ -38,7 +38,7 @@ export const initialDrivers = [
         status: "Available" 
     },
     { 
-        id: 1, 
+        id: 2, 
         name: "John Kariuki", 
         vehicle: "Toyota Probox", 
         plate: "KCP 442Z", 
@@ -46,7 +46,7 @@ export const initialDrivers = [
         status: "Available" 
     },
     { 
-        id: 2, 
+        id: 3, 
         name: "Sarah Wanjiku", 
         vehicle: "Isuzu FRR", 
         plate: "KDD 901L", 
@@ -54,7 +54,7 @@ export const initialDrivers = [
         status: "Available" 
     },
     { 
-        id: 3, 
+        id: 4, 
         name: "Mike’s Logistics", 
         vehicle: "Mercedes Actros", 
         plate: "ZEE 554A", 
