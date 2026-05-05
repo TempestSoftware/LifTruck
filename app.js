@@ -80,8 +80,22 @@ document.getElementById('calculateBtn').onclick = async () => {
 };
 
 // --- Driver WhatsApp Logic ---
+import { REQUIRED_DOCS } from './config.js';
+
 document.getElementById('driverForm').onsubmit = (e) => {
     e.preventDefault();
-    const msg = `Hi MK, I want to apply to LifTruck. Name: ${document.getElementById('dName').value}, Plate: ${document.getElementById('dPlate').value}. I will now send my documents.`;
-    window.location.href = `https://wa.me/2547XXXXXXXX?text=${encodeURIComponent(msg)}`;
+    
+    const name = document.getElementById('dName').value;
+    const plate = document.getElementById('dPlate').value;
+    
+    // This part dynamically creates the checklist for the WhatsApp message
+    const docChecklist = REQUIRED_DOCS.map(doc => `[ ] ${doc}`).join('%0A');
+
+    const msg = `*NEW DRIVER APPLICATION*%0A` +
+                `Name: ${name}%0A` +
+                `Plate: ${plate}%0A%0A` +
+                `*I will now send these documents:*%0A${docChecklist}`;
+
+    const mkNumber = "2547XXXXXXXX"; // Replace with MK's actual number
+    window.location.href = `https://wa.me/${mkNumber}?text=${msg}`;
 };
