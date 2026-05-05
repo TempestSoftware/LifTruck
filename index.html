@@ -3,75 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifTruck | Smart Logistics</title>
+    <title>LifTruck | Professional Logistics</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         .purple-gradient { background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); }
         .input-field { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.2s; }
         .input-field:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
-        .tab-active { border-bottom: 4px solid #7c3aed; color: #4c1d95; }
+        .tab-active { border-bottom: 4px solid #7c3aed; color: #4c1d95; font-weight: 800; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 pb-20">
 
     <header class="bg-white p-4 shadow-sm sticky top-0 z-50">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="bg-purple-900 text-white p-2 rounded-lg font-bold">LT</div>
-                <span class="text-xl font-black text-purple-900 uppercase tracking-tighter">LifTruck</span>
+                <span class="text-xl font-black text-purple-900 uppercase tracking-tighter italic">LifTruck</span>
             </div>
-            <div class="flex space-x-4 text-sm font-bold uppercase tracking-widest text-gray-400">
+            <div class="flex space-x-6 text-sm uppercase tracking-widest text-gray-400">
                 <button id="tabBook" class="pb-1 tab-active">Client</button>
                 <button id="tabDrive" class="pb-1">Driver</button>
             </div>
         </div>
     </header>
 
-    <section id="clientPortal" class="max-w-4xl mx-auto p-6">
+    <section id="clientSection" class="max-w-4xl mx-auto p-6">
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
             <div class="purple-gradient p-8 text-white text-center">
                 <h1 class="text-2xl font-bold">Move Goods with Ease</h1>
-                <p class="text-purple-100 mt-2">Instant rates. Verified drivers.</p>
+                <p class="text-purple-100 mt-1 italic text-sm">Instant rates for Thika, Nairobi & Beyond</p>
             </div>
 
             <div class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pickup Location</label>
-                        <input type="text" id="pickup" class="input-field" placeholder="e.g., Thika Town">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pickup (e.g. Section 9, Thika)</label>
+                        <input type="text" id="pickup" class="input-field" placeholder="Starting point...">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Destination</label>
-                        <input type="text" id="dropoff" class="input-field" placeholder="e.g., Juja">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Destination (e.g. Juja City Mall)</label>
+                        <input type="text" id="dropoff" class="input-field" placeholder="Ending point...">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estimated Distance (KM)</label>
-                    <input type="number" id="distanceInput" class="input-field" placeholder="Enter distance in KM">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cargo Weight Class</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cargo Class</label>
                     <select id="weightSelect" class="input-field">
                         <option value="small">Small (Bike/Probox - Up to 50kg)</option>
-                        <option value="medium">Medium (Van/Pickup - Up to 500kg)</option>
+                        <option value="medium" selected>Medium (Van/Pickup - Up to 500kg)</option>
                         <option value="large">Large (Light Truck - Up to 2 Tons)</option>
                         <option value="heavy">Heavy (Lorry - Over 2 Tons)</option>
                     </select>
                 </div>
 
-                <button id="calculateBtn" class="w-full purple-gradient text-white font-bold py-4 rounded-2xl shadow-lg">
-                    Check Rates & Available Drivers
+                <button id="calculateBtn" class="w-full purple-gradient text-white font-bold py-4 rounded-2xl shadow-lg hover:scale-[1.01] transition">
+                    Calculate Rate & Find Drivers
                 </button>
             </div>
         </div>
-
         <div id="driverList" class="mt-8 space-y-4"></div>
     </section>
 
-    <section id="driverPortal" class="max-w-4xl mx-auto p-6 hidden">
-        </section>
+    <section id="driverSection" class="max-w-4xl mx-auto p-6 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
+            <div class="bg-indigo-950 p-8 text-white">
+                <h2 class="text-2xl font-bold italic">Join the Fleet</h2>
+                <p class="text-indigo-200 mt-1">Submit your details to start the verification process.</p>
+            </div>
+
+            <form id="driverForm" class="p-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="dName" placeholder="Full Name" class="input-field" required>
+                    <input type="text" id="dPlate" placeholder="Plate Number (e.g. KDA 123X)" class="input-field" required>
+                </div>
+                <select id="dVehType" class="input-field">
+                    <option value="Probox/Van">Probox / Van</option>
+                    <option value="Pickup/Canter">Pickup / Light Canter</option>
+                    <option value="Lorry">Heavy Lorry</option>
+                </select>
+                <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-xs text-yellow-800">
+                    <b>Note:</b> After clicking submit, you will be redirected to WhatsApp to send photos of your ID, Logbook, Insurance, and NTSA certificate to MK.
+                </div>
+                <button type="submit" class="w-full bg-indigo-900 text-white font-bold py-4 rounded-2xl">
+                    Apply & Send Documents
+                </button>
+            </form>
+        </div>
+    </section>
 
     <script type="module" src="app.js"></script>
 </body>
