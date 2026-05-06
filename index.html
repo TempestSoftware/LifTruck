@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LifTruck | Professional Logistics</title>
+    <div id="termsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[80vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+        <div class="purple-gradient p-6 text-white flex justify-between items-center">
+            <h2 id="modalTitle" class="text-xl font-bold">Terms & Conditions</h2>
+            <button id="closeModal" class="text-white hover:bg-white/20 p-2 rounded-full">✕</button>
+        </div>
+        <div id="modalContent" class="p-8 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-4">
+            </div>
+        <div class="p-6 border-t bg-gray-50 text-right">
+            <button id="modalOk" class="purple-gradient text-white px-8 py-2 rounded-xl font-bold">I Understand</button>
+        </div>
+    </div>
+</div>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
