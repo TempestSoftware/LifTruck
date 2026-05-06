@@ -32,9 +32,28 @@ function getDistance(lat1, lon1, lat2, lon2) {
 
 // --- Client Booking Logic ---
 document.getElementById('calculateBtn').onclick = async () => {
+    const cName = document.getElementById('clientName').value;
+const cPhone = document.getElementById('clientPhone').value;
     const pickup = document.getElementById('pickup').value;
     const dropoff = document.getElementById('dropoff').value;
     const wClass = document.getElementById('weightSelect').value;
+    // Update the button's onclick URL:
+const whatsappMsg = *LIFTRUCK BOOKING REQUEST*%0A +
+     --------------------------%0A +
+                    *Client Name:* ${cName}%0A +
+                    *Client Phone:* ${cPhone};
+
+                    --------------------------%0A +
+                    *Driver:* ${d.name}%0A +
+                    *From:* ${pick}%0A +
+                    *To:* ${drop}%0A +
+                    *Price:* KES ${Math.ceil(price)}%0A +
+                   
+// The button HTML:
+<button onclick="window.location.href='https://wa.me/2547XXXXXXXX?text=${whatsappMsg}'" 
+    class="bg-purple-600 text-white px-5 py-2 rounded-xl text-sm font-bold">
+    Select Driver
+</button>
 
     if (!pickup || !dropoff) return alert("Please enter both locations");
 
