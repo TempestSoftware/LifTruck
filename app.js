@@ -1,4 +1,4 @@
-import { PRICING_LOGIC, initialDrivers } from './config.js';
+import { PRICING_LOGIC, initialDrivers, REQUIRED_DOCS } from './config.js';
 
 // --- Tab Navigation ---
 const tabBook = document.getElementById('tabBook');
@@ -22,7 +22,7 @@ tabBook.onclick = () => {
 
 // --- Haversine Math ---
 function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // KM
+    const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -33,146 +33,122 @@ function getDistance(lat1, lon1, lat2, lon2) {
 // --- Client Booking Logic ---
 document.getElementById('calculateBtn').onclick = async () => {
     const cName = document.getElementById('clientName').value;
-const cPhone = document.getElementById('clientPhone').value;
+    const cPhone = document.getElementById('clientPhone').value;
     const pickup = document.getElementById('pickup').value;
     const dropoff = document.getElementById('dropoff').value;
     const wClass = document.getElementById('weightSelect').value;
-    // Update the button's onclick URL:
-const whatsappMsg = *LIFTRUCK BOOKING REQUEST*%0A +
-     --------------------------%0A +
-                    *Client Name:* ${cName}%0A +
-                    *Client Phone:* ${cPhone};
 
-                    --------------------------%0A +
-                    *Driver:* ${d.name}%0A +
-                    *From:* ${pick}%0A +
-                    *To:* ${drop}%0A +
-                    *Price:* KES ${Math.ceil(price)}%0A +
-                   
-// The button HTML:
-<button onclick="window.location.href='https://wa.me/254794152875?text=${whatsappMsg}'" 
-    class="bg-purple-600 text-white px-5 py-2 rounded-xl text-sm font-bold">
-    Select Driver
-</button>
-
-    if (!pickup || !dropoff || !name || !number) return alert("Please enter name, number and both locations");
-
-    // Mocking Geocoding (In a real app, you'd fetch Lat/Long from a search API)
-    // For now, let's assume a random distance for testing, 
-    // but the logic below handles the "Short Move" scenario:
-    
-    let simulatedDistance = Math.random() * 15; // Random 0-15km for demo
-    if(pickup.toLowerCase().includes("next door")) simulatedDistance = 0.5;
-
-    const rates = PRICING_LOGIC[wClass];
-    
-    // --- The 1KM Logic ---
-    let finalPrice;
-    let distanceLabel;
-    
-    if (simulatedDistance < 1) {
-        finalPrice = rates.base; // Flat fee for ultra-short moves
-        distanceLabel = "Short Distance Move (Under 1KM)";
-    } else {
-        finalPrice = rates.base + (simulatedDistance * rates.perKm);
-        distanceLabel = `${simulatedDistance.toFixed(1)} KM`;
+    // MANDATORY CHECK: Ensure all fields are filled
+    if (!pickup || !dropoff || !cName || !cPhone) {
+        return alert("Please enter your Name, Phone Number, and both Locations to continue.");
     }
 
-    const available = initialDrivers.filter(d => d.class === wClass && d.status === "Available");
+    try {
+        // Real Geocoding Logic
+        const res1 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pickup)}`);
+        const data1 = await res1.json();
+        const res2 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(dropoff)}`);
+        const data2 = await res2.json();
 
-    document.getElementById('driverList').innerHTML = `
-        <div class="bg-purple-900 text-white p-4 rounded-2xl flex justify-between">
-            <span>Distance: ${distanceLabel}</span>
-            <span class="font-bold">Total: KES ${Math.ceil(finalPrice)}</span>
+        if (data1.length === 0 || data2.length === 0) {
+            alert("Could not find locations. Please be more specific (e.g. 'Thika Town').");
+            return;
+        }
+
+        const rawDistance = getDistance(data1[0].lat, data1[0].lon, data2[0].lat, data2[0].lon);
+        const actualDistance = rawDistance * 1.3; // 30% Road Buffer
+
+        const rates = PRICING_LOGIC[wClass];
+        let finalPrice = actualDistance < 1 ? rates.base : rates.base + (actualDistance * rates.perKm);
+        let distLabel = actualDistance < 1 ? "Short Move (<1KM)" : `${actualDistance.toFixed(1)} KM`;
+
+        // Filter and Render
+        const available = initialDrivers.filter(d => d.class === wClass && d.status === "Available");
+        renderResults(distLabel, finalPrice, cName, cPhone, pickup, dropoff, available);
+
+    } catch (err) {
+        alert("Network error. Please try again.");
+    }
+};
+
+function renderResults(distLabel, price, cName, cPhone, pick, drop, drivers) {
+    const list = document.getElementById('driverList');
+    list.innerHTML = `
+        <div class="bg-purple-900 text-white p-4 rounded-2xl flex justify-between shadow-md mb-4">
+            <span>Distance: ${distLabel}</span>
+            <span class="font-bold">Total: KES ${Math.ceil(price)}</span>
         </div>
-        ${available.map(d => `
-            <div class="bg-white p-5 rounded-2xl border flex justify-between items-center shadow-sm">
+        ${drivers.map(d => {
+            const msg = encodeURIComponent(
+                `*LIFTRUCK BOOKING REQUEST*\n` +
+                `--------------------------\n` +
+                `*Client Name:* ${cName}\n` +
+                `*Client Phone:* ${cPhone}\n` +
+                `--------------------------\n` +
+                `*Driver:* ${d.name}\n` +
+                `*From:* ${pick}\n` +
+                `*To:* ${drop}\n` +
+                `*Price:* KES ${Math.ceil(price)}`
+            );
+            return `
+            <div class="bg-white p-5 rounded-2xl border flex justify-between items-center shadow-sm mb-3">
                 <div>
                     <h4 class="font-bold text-gray-800">${d.name}</h4>
                     <p class="text-xs text-purple-600 font-bold">${d.vehicle} • ${d.plate}</p>
                 </div>
-                <button onclick="window.location.href='https://wa.me/254794152875?text=Booking request for ${d.name}. Pick up at ${pickup}, Drop at ${dropoff}. Price: KES ${Math.ceil(finalPrice)}'" 
-                    class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Book</button>
-            </div>
-        `).join('')}
+                <button onclick="window.location.href='https://wa.me/254794152875?text=${msg}'" 
+                    class="bg-purple-600 text-white px-5 py-2 rounded-xl text-sm font-bold">Book</button>
+            </div>`;
+        }).join('')}
     `;
-};
+}
 
-// --- Driver WhatsApp Logic ---
-import { REQUIRED_DOCS } from './config.js';
-
+// --- Driver Registration Logic ---
 document.getElementById('driverForm').onsubmit = (e) => {
     e.preventDefault();
-    
     const name = document.getElementById('dName').value;
-    const cPhone = document.getElementById('dPhone').value;
+    const phone = document.getElementById('dPhone').value; // Ensure your HTML has id="dPhone"
     const plate = document.getElementById('dPlate').value;
-    
-    // This part dynamically creates the checklist for the WhatsApp message
-    const docChecklist = REQUIRED_DOCS.map(doc => `[ ] ${doc}`).join('%0A');
 
-    const msg = `*NEW DRIVER APPLICATION*%0A` +
-                `Name: ${name}%0A` +
-         `Phone:* ${phone}%0A`+
-                `Plate: ${plate}%0A%0A` +
-                `*I will now send these documents:*%0A${docChecklist}`;
+    if (!name || !phone || !plate) return alert("Please fill in all driver details.");
 
-    const mkNumber = "254794152875"; // Replace with MK's actual number
-    window.location.href = `https://wa.me/${mkNumber}?text=${msg}`;
+    const docChecklist = REQUIRED_DOCS.map(doc => `[ ] ${doc}`).join('\n');
+    const msg = encodeURIComponent(
+        `*NEW DRIVER APPLICATION*\n` +
+        `Name: ${name}\n` +
+        `Phone: ${phone}\n` +
+        `Plate: ${plate}\n\n` +
+        `*I will now send these documents:*\n${docChecklist}`
+    );
+
+    window.location.href = `https://wa.me/254794152875?text=${msg}`;
 };
-// --- TERMS & CONDITIONS MODAL LOGIC ---
 
-// 1. Grab the Modal Elements
+// --- TERMS & CONDITIONS MODAL LOGIC ---
 const termsModal = document.getElementById('termsModal');
 const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('modalContent');
 const closeModal = document.getElementById('closeModal');
 const modalOk = document.getElementById('modalOk');
 
-// 2. The Data (Condensed for the UI)
 const LEGAL_CONTENT = {
-    driver: `
-        <div class="space-y-4">
-            <p class="font-bold text-purple-700">Effective: 5/6/2026</p>
-            <p><b>Contractor Status:</b> You are an independent contractor, not an employee. You provide services directly to the client.</p>
-            <p><b>Responsibility:</b> You accept full liability for goods. Theft, loss, or damage due to negligence is your responsibility.</p>
-            <p><b>Conduct:</b> No unauthorized passengers, no diversions, and no demanding extra payment outside the platform.</p>
-            <p><b>Tracking:</b> You agree to live GPS tracking while on active trips.</p>
-        </div>
-    `,
-    client: `
-        <div class="space-y-4">
-            <p class="font-bold text-purple-700">Effective: 5/6/2026</p>
-            <p><b>Platform Role:</b> LifTruck is a matching platform, not a transporter. We do not own vehicles or handle goods.</p>
-            <p><b>Cargo:</b> You must provide accurate weight/type details. Misdeclaration leads to extra charges.</p>
-            <p><b>Liability:</b> The Driver is primarily responsible for goods. LifTruck is not liable for theft or damage unless optional insurance is purchased.</p>
-            <p><b>Prohibited:</b> No illegal drugs, weapons, or bulk cash.</p>
-        </div>
-    `
+    driver: `<p><b>Contractor Status:</b> Independent contractor, not employee...</p>`, // Your full text here
+    client: `<p><b>Platform Role:</b> LifTruck is a platform, not a transporter...</p>` // Your full text here
 };
 
-// 3. The Function to Open the Modal
-// This is what the "Terms & Conditions" link in your HTML will call
 window.openTerms = function(type) {
     if (LEGAL_CONTENT[type]) {
-        modalTitle.innerText = type === 'driver' ? "Driver Terms & Conditions" : "Client Terms & Conditions";
+        modalTitle.innerText = type === 'driver' ? "Driver Terms" : "Client Terms";
         modalContent.innerHTML = LEGAL_CONTENT[type];
         termsModal.classList.remove('hidden');
-        // Prevent background scrolling while modal is open
         document.body.style.overflow = 'hidden';
     }
 };
 
-// 4. Closing Logic
 const hideModal = () => {
     termsModal.classList.add('hidden');
-    document.body.style.overflow = 'auto'; // Re-enable scrolling
+    document.body.style.overflow = 'auto';
 };
 
 closeModal.onclick = hideModal;
 modalOk.onclick = hideModal;
-
-// Close if they click outside the white box
-termsModal.onclick = (e) => {
-    if (e.target === termsModal) hideModal();
-};
