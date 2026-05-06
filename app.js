@@ -50,12 +50,12 @@ const whatsappMsg = *LIFTRUCK BOOKING REQUEST*%0A +
                     *Price:* KES ${Math.ceil(price)}%0A +
                    
 // The button HTML:
-<button onclick="window.location.href='https://wa.me/2547XXXXXXXX?text=${whatsappMsg}'" 
+<button onclick="window.location.href='https://wa.me/254794152875?text=${whatsappMsg}'" 
     class="bg-purple-600 text-white px-5 py-2 rounded-xl text-sm font-bold">
     Select Driver
 </button>
 
-    if (!pickup || !dropoff) return alert("Please enter both locations");
+    if (!pickup || !dropoff || !name || !number) return alert("Please enter name, number and both locations");
 
     // Mocking Geocoding (In a real app, you'd fetch Lat/Long from a search API)
     // For now, let's assume a random distance for testing, 
@@ -91,7 +91,7 @@ const whatsappMsg = *LIFTRUCK BOOKING REQUEST*%0A +
                     <h4 class="font-bold text-gray-800">${d.name}</h4>
                     <p class="text-xs text-purple-600 font-bold">${d.vehicle} • ${d.plate}</p>
                 </div>
-                <button onclick="window.location.href='https://wa.me/2547XXXXXXXX?text=Booking request for ${d.name}. Pick up at ${pickup}, Drop at ${dropoff}. Price: KES ${Math.ceil(finalPrice)}'" 
+                <button onclick="window.location.href='https://wa.me/254794152875?text=Booking request for ${d.name}. Pick up at ${pickup}, Drop at ${dropoff}. Price: KES ${Math.ceil(finalPrice)}'" 
                     class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Book</button>
             </div>
         `).join('')}
@@ -105,6 +105,7 @@ document.getElementById('driverForm').onsubmit = (e) => {
     e.preventDefault();
     
     const name = document.getElementById('dName').value;
+    const cPhone = document.getElementById('dPhone').value;
     const plate = document.getElementById('dPlate').value;
     
     // This part dynamically creates the checklist for the WhatsApp message
@@ -112,10 +113,11 @@ document.getElementById('driverForm').onsubmit = (e) => {
 
     const msg = `*NEW DRIVER APPLICATION*%0A` +
                 `Name: ${name}%0A` +
+         `Phone:* ${phone}%0A`+
                 `Plate: ${plate}%0A%0A` +
                 `*I will now send these documents:*%0A${docChecklist}`;
 
-    const mkNumber = "2547XXXXXXXX"; // Replace with MK's actual number
+    const mkNumber = "254794152875"; // Replace with MK's actual number
     window.location.href = `https://wa.me/${mkNumber}?text=${msg}`;
 };
 // --- TERMS & CONDITIONS MODAL LOGIC ---
