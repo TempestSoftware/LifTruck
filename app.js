@@ -99,3 +99,59 @@ document.getElementById('driverForm').onsubmit = (e) => {
     const mkNumber = "2547XXXXXXXX"; // Replace with MK's actual number
     window.location.href = `https://wa.me/${mkNumber}?text=${msg}`;
 };
+// --- TERMS & CONDITIONS MODAL LOGIC ---
+
+// 1. Grab the Modal Elements
+const termsModal = document.getElementById('termsModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalContent = document.getElementById('modalContent');
+const closeModal = document.getElementById('closeModal');
+const modalOk = document.getElementById('modalOk');
+
+// 2. The Data (Condensed for the UI)
+const LEGAL_CONTENT = {
+    driver: `
+        <div class="space-y-4">
+            <p class="font-bold text-purple-700">Effective: 5/6/2026</p>
+            <p><b>Contractor Status:</b> You are an independent contractor, not an employee. You provide services directly to the client.</p>
+            <p><b>Responsibility:</b> You accept full liability for goods. Theft, loss, or damage due to negligence is your responsibility.</p>
+            <p><b>Conduct:</b> No unauthorized passengers, no diversions, and no demanding extra payment outside the platform.</p>
+            <p><b>Tracking:</b> You agree to live GPS tracking while on active trips.</p>
+        </div>
+    `,
+    client: `
+        <div class="space-y-4">
+            <p class="font-bold text-purple-700">Effective: 5/6/2026</p>
+            <p><b>Platform Role:</b> LifTruck is a matching platform, not a transporter. We do not own vehicles or handle goods.</p>
+            <p><b>Cargo:</b> You must provide accurate weight/type details. Misdeclaration leads to extra charges.</p>
+            <p><b>Liability:</b> The Driver is primarily responsible for goods. LifTruck is not liable for theft or damage unless optional insurance is purchased.</p>
+            <p><b>Prohibited:</b> No illegal drugs, weapons, or bulk cash.</p>
+        </div>
+    `
+};
+
+// 3. The Function to Open the Modal
+// This is what the "Terms & Conditions" link in your HTML will call
+window.openTerms = function(type) {
+    if (LEGAL_CONTENT[type]) {
+        modalTitle.innerText = type === 'driver' ? "Driver Terms & Conditions" : "Client Terms & Conditions";
+        modalContent.innerHTML = LEGAL_CONTENT[type];
+        termsModal.classList.remove('hidden');
+        // Prevent background scrolling while modal is open
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+// 4. Closing Logic
+const hideModal = () => {
+    termsModal.classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Re-enable scrolling
+};
+
+closeModal.onclick = hideModal;
+modalOk.onclick = hideModal;
+
+// Close if they click outside the white box
+termsModal.onclick = (e) => {
+    if (e.target === termsModal) hideModal();
+};
