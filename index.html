@@ -17,12 +17,12 @@
     <header class="bg-white p-4 shadow-sm sticky top-0 z-50">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-2">
-                <div class="bg-purple-900 text-white p-2 rounded-lg font-bold uppercase">LT</div>
-                <span class="text-xl font-black text-purple-900 uppercase tracking-tighter italic">LifTruck</span>
+                <div class="bg-purple-900 text-white p-2 rounded-lg font-bold">LT</div>
+                <span class="text-xl font-black text-purple-900 uppercase italic">LifTruck</span>
             </div>
-            <div class="flex space-x-6 text-sm uppercase tracking-widest text-gray-400">
-                <button id="tabBook" class="pb-1 tab-active">Client</button>
-                <button id="tabDrive" class="pb-1">Driver</button>
+            <div class="flex space-x-6 text-sm uppercase tracking-widest text-gray-400 font-bold">
+                <button id="tabBook" class="pb-1 tab-active" onclick="window.switchTab('book')">Client</button>
+                <button id="tabDrive" class="pb-1" onclick="window.switchTab('drive')">Driver</button>
             </div>
         </div>
     </header>
@@ -31,34 +31,32 @@
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
             <div class="purple-gradient p-8 text-white text-center">
                 <h1 class="text-2xl font-bold">Move Goods with Ease</h1>
-                <p class="text-purple-100 mt-1 italic text-sm">Reliable transport for Thika & Nairobi</p>
+                <p class="text-purple-100 mt-1 italic text-sm">Instant rates for Thika, Nairobi & Beyond</p>
             </div>
 
             <div class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Your Full Name</label>
-                        <input type="text" id="clientName" class="input-field" placeholder="Peter Mwangi" required>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Your Name</label>
+                        <input type="text" id="clientName" class="input-field" placeholder="Full Name">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number (M-Pesa)</label>
-                        <input type="tel" id="clientPhone" class="input-field" placeholder="07XXXXXXXX" required>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Phone Number</label>
+                        <input type="tel" id="clientPhone" class="input-field" placeholder="0712345678">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pickup Point</label>
-                        <input type="text" id="pickup" class="input-field" placeholder="e.g. Section 9, Thika">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Pickup Point</label>
+                        <input type="text" id="pickup" class="input-field" placeholder="e.g., Section 9, Thika">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Destination</label>
-                        <input type="text" id="dropoff" class="input-field" placeholder="e.g. Juja City Mall">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Destination</label>
+                        <input type="text" id="dropoff" class="input-field" placeholder="e.g., Juja City Mall">
                     </div>
                 </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vehicle Type Required</label>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Cargo Class</label>
                     <select id="weightSelect" class="input-field">
                         <option value="small">Small (Bike/Probox - Up to 50kg)</option>
                         <option value="medium" selected>Medium (Van/Pickup - Up to 500kg)</option>
@@ -66,75 +64,66 @@
                         <option value="heavy">Heavy (Lorry - Over 2 Tons)</option>
                     </select>
                 </div>
-
-                <button id="calculateBtn" class="w-full purple-gradient text-white font-bold py-4 rounded-2xl shadow-lg hover:scale-[1.01] transition uppercase tracking-wider">
-                    Get Quote & Book
+                <button id="calculateBtn" class="w-full purple-gradient text-white font-bold py-4 rounded-2xl shadow-lg hover:scale-[1.01] transition">
+                    Calculate Rate & Find Drivers
                 </button>
-
-                <p class="text-center text-xs text-gray-400 pt-2">
-                    By booking, you agree to the 
-                    <a href="javascript:void(0)" onclick="openTerms('client')" class="text-purple-700 underline">Client Terms</a>
-                </p>
             </div>
         </div>
+
         <div id="driverList" class="mt-8 space-y-4"></div>
+
+        <div class="mt-10 p-6 bg-white rounded-3xl shadow-xl border border-purple-100">
+            <h3 class="text-lg font-bold text-purple-900 mb-4">Live Tracking Dashboard</h3>
+            <div id="clientDashboard" class="space-y-3">
+                <p class="text-gray-400 italic text-sm text-center">Loading your moves...</p>
+            </div>
+            <p class="text-center text-xs text-gray-400 mt-6">
+                By using LifTruck, you agree to the 
+                <a href="javascript:void(0)" onclick="window.openTerms('client')" class="text-purple-700 underline font-bold">Client Terms</a>
+            </p>
+        </div>
     </section>
 
     <section id="driverSection" class="max-w-4xl mx-auto p-6 hidden">
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
             <div class="bg-indigo-950 p-8 text-white">
-                <h2 class="text-2xl font-bold italic">Register as a Partner</h2>
-                <p class="text-indigo-200 mt-1">Join Thika's fastest-growing logistics fleet.</p>
+                <h2 class="text-2xl font-bold italic">Join the Fleet</h2>
+                <p class="text-indigo-200 mt-1">Submit details for verification.</p>
             </div>
-
             <form id="driverForm" class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input type="text" id="dName" placeholder="Full Name" class="input-field" required>
                     <input type="tel" id="dPhone" placeholder="WhatsApp Number" class="input-field" required>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="dPlate" placeholder="Plate Number (e.g. KDA 123X)" class="input-field" required>
-                   <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vehicle Category</label>
-<select id="dVehType" class="input-field">
-    <option value="small">Small (Bike/Probox - Up to 50kg)</option>
-    <option value="medium" selected>Medium (Van/Pickup - Up to 500kg)</option>
-    <option value="large">Large (Light Truck - Up to 2 Tons)</option>
-    <option value="heavy">Heavy (Lorry - Over 2 Tons)</option>
-</select>
+                    <input type="text" id="dPlate" placeholder="Plate (e.g. KDA 123X)" class="input-field" required>
+                    <input type="text" id="dModel" placeholder="Vehicle Model (e.g. Toyota Probox)" class="input-field" required>
                 </div>
-                
-                <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 text-xs text-yellow-800">
-                    <strong>Next Steps:</strong> You will be redirected to WhatsApp to share your ID, Logbook, and Insurance photos with MK for verification.
-                </div>
-
-                <button type="submit" class="w-full bg-indigo-900 text-white font-bold py-4 rounded-2xl shadow-md uppercase tracking-wider">
-                    Register Now
+                <select id="dVehType" class="input-field">
+                    <option value="small">Category: Small (Bike/Probox)</option>
+                    <option value="medium">Category: Medium (Van/Pickup)</option>
+                    <option value="large">Category: Large (Light Truck)</option>
+                    <option value="heavy">Category: Heavy (Lorry)</option>
+                </select>
+                <button type="submit" class="w-full bg-indigo-900 text-white font-bold py-4 rounded-2xl">
+                    Register as Driver
                 </button>
-
-                <p class="text-center text-xs text-gray-400">
-                    Partnering is subject to the 
-                    <a href="javascript:void(0)" onclick="openTerms('driver')" class="text-indigo-700 underline font-bold">Driver Partnership Terms</a>
+                <p class="text-center text-xs text-gray-500">
+                    Subject to <a href="javascript:void(0)" onclick="window.openTerms('driver')" class="text-indigo-700 underline font-bold">Partner Terms</a>
                 </p>
             </form>
-            <div class="mt-10 p-6 bg-white rounded-3xl shadow-xl border border-purple-100">
-    <h3 class="text-lg font-bold text-purple-900 mb-4">My Recent Bookings</h3>
-    <div id="clientDashboard" class="space-y-3">
-        <p class="text-gray-400 italic text-sm text-center">Loading your moves...</p>
-    </div>
-</div>
         </div>
     </section>
 
     <div id="termsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl max-h-[85vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
             <div class="purple-gradient p-6 text-white flex justify-between items-center">
-                <h2 id="modalTitle" class="text-xl font-bold italic underline">Legal Terms</h2>
-                <button id="closeModal" class="text-white hover:bg-white/20 p-2 rounded-full">✕</button>
+                <h2 id="modalTitle" class="text-xl font-bold italic">Legal Terms</h2>
+                <button onclick="window.closeTerms()" class="text-white">✕</button>
             </div>
-            <div id="modalContent" class="p-8 overflow-y-auto text-sm text-gray-600 leading-relaxed space-y-4">
-                </div>
-            <div class="p-6 border-t bg-gray-50 flex justify-end">
-                <button id="modalOk" class="purple-gradient text-white px-10 py-3 rounded-xl font-bold shadow-lg uppercase text-xs">I Understand</button>
+            <div id="modalContent" class="p-8 text-sm text-gray-700 space-y-4"></div>
+            <div class="p-6 border-t bg-gray-50 text-right">
+                <button onclick="window.closeTerms()" class="purple-gradient text-white px-8 py-2 rounded-xl font-bold">I Understand</button>
             </div>
         </div>
     </div>
