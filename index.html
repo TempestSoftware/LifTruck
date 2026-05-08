@@ -94,11 +94,13 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input type="text" id="dPlate" placeholder="Plate Number (e.g. KDA 123X)" class="input-field" required>
-                    <select id="dVehType" class="input-field">
-                        <option value="Probox/Van">Probox / Van</option>
-                        <option value="Pickup/Canter">Pickup / Light Canter</option>
-                        <option value="Lorry">Heavy Lorry</option>
-                    </select>
+                   <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vehicle Category</label>
+<select id="dVehType" class="input-field">
+    <option value="small">Small (Bike/Probox - Up to 50kg)</option>
+    <option value="medium" selected>Medium (Van/Pickup - Up to 500kg)</option>
+    <option value="large">Large (Light Truck - Up to 2 Tons)</option>
+    <option value="heavy">Heavy (Lorry - Over 2 Tons)</option>
+</select>
                 </div>
                 
                 <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 text-xs text-yellow-800">
