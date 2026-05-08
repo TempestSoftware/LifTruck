@@ -1,35 +1,31 @@
-import { PRICING_LOGIC, REQUIRED_DOCS } from './config.js';
+import { PRICING_LOGIC } from './config.js';
 
-// --- CONFIGURATION ---
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1jnpJSUAMX8uBjhfz4ZcJIM0GFgVOD5A6c4EwdPhdWujq6T1nGhmP7LwNvezkHZsc7A/exec"; 
+const SCRIPT_URL = "PASTE_YOUR_NEW_WEB_APP_URL_HERE"; 
 const MK_WHATSAPP = "254794152875";
 
-// --- TAB NAVIGATION (The "Infinity" Fix) ---
-const tabBook = document.getElementById('tabBook');
-const tabDrive = document.getElementById('tabDrive');
-const clientSection = document.getElementById('clientSection');
-const driverSection = document.getElementById('driverSection');
-
-// Using window. to ensure buttons work even if there's a script delay
+// --- TABS & NAVIGATION ---
 window.switchTab = function(target) {
+    const client = document.getElementById('clientSection');
+    const driver = document.getElementById('driverSection');
+    const tabB = document.getElementById('tabBook');
+    const tabD = document.getElementById('tabDrive');
+
     if (target === 'drive') {
-        clientSection.classList.add('hidden');
-        driverSection.classList.remove('hidden');
-        tabDrive.classList.add('tab-active');
-        tabBook.classList.remove('tab-active');
+        client.classList.add('hidden');
+        driver.classList.remove('hidden');
+        tabD.classList.add('tab-active');
+        tabB.classList.remove('tab-active');
     } else {
-        driverSection.classList.add('hidden');
-        clientSection.classList.remove('hidden');
-        tabBook.classList.add('tab-active');
-        tabDrive.classList.remove('tab-active');
+        driver.classList.add('hidden');
+        client.classList.remove('hidden');
+        tabB.classList.add('tab-active');
+        tabD.classList.remove('tab-active');
     }
 };
+document.getElementById('tabBook').onclick = () => switchTab('book');
+document.getElementById('tabDrive').onclick = () => switchTab('drive');
 
-// Re-attach listeners to the header buttons
-tabDrive.onclick = () => window.switchTab('drive');
-tabBook.onclick = () => window.switchTab('client');
-
-// --- CORE MATH (HAVERSINE) ---
+// --- MATH & DISTANCE ---
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -39,122 +35,109 @@ function getDistance(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-// --- DATABASE FETCHING ---
+// --- DATABASE FETCH ---
 async function getLiveDrivers() {
     try {
-        // This calls the Apps Script we just updated
         const res = await fetch(`${SCRIPT_URL}?type=getDrivers`);
         const drivers = await res.json();
-        
-        // Map the approved drivers into the format the website uses
+        // Mapping: 0:Name, 1:Phone, 2:Plate, 3:Category, 4:Model
         return drivers.map(d => ({
-            name: d[0], 
-            phone: d[1], 
-            plate: d[2], 
-            vehicle: d[3], 
-            class: d[3].toLowerCase().includes('lorry') ? 'heavy' : 
-                   d[3].toLowerCase().includes('pickup') ? 'large' : 'medium'
+            name: d[0], phone: d[1], plate: d[2], category: d[3], model: d[4]
         }));
-    } catch (e) {
-        console.error("Database error:", e);
-        return []; 
-    }
+    } catch (e) { return []; }
 }
 
-// --- CLIENT LOGIC ---
+// --- CLIENT BOOKING ---
 document.getElementById('calculateBtn').onclick = async () => {
-    const cName = document.getElementById('clientName').value;
-    const cPhone = document.getElementById('clientPhone').value;
-    const pickup = document.getElementById('pickup').value;
-    const dropoff = document.getElementById('dropoff').value;
-    const wClass = document.getElementById('weightSelect').value;
+    const name = document.getElementById('clientName').value;
+    const phone = document.getElementById('clientPhone').value;
+    const pick = document.getElementById('pickup').value;
+    const drop = document.getElementById('dropoff').value;
+    const cat = document.getElementById('weightSelect').value;
 
-    if (!cName || !cPhone || !pickup || !dropoff) return alert("Please fill all fields!");
-
-    const btn = document.getElementById('calculateBtn');
-    btn.innerText = "Processing...";
+    if (!name || !phone || !pick || !drop) return alert("Fill all fields");
 
     try {
-        const [res1, res2] = await Promise.all([
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pickup + ", Kenya")}`),
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(dropoff + ", Kenya")}`)
+        const [r1, r2] = await Promise.all([
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pick + ", Kenya")}`),
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(drop + ", Kenya")}`)
         ]);
-        const [data1, data2] = await Promise.all([res1.json(), res2.json()]);
+        const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
 
-        const rawDist = getDistance(data1[0].lat, data1[0].lon, data2[0].lat, data2[0].lon);
-        const actualDist = rawDist * 1.3;
-        const rates = PRICING_LOGIC[wClass];
-        const finalPrice = Math.ceil(actualDist < 1 ? rates.base : rates.base + (actualDist * rates.perKm));
+        const dist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
+        const price = Math.ceil(dist < 1 ? PRICING_LOGIC[cat].base : PRICING_LOGIC[cat].base + (dist * PRICING_LOGIC[cat].perKm));
 
         const allDrivers = await getLiveDrivers();
-        const filtered = allDrivers.filter(d => d.class === wClass || wClass === 'medium');
+        const filtered = allDrivers.filter(d => d.category === cat);
 
-        renderDriverResults(actualDist.toFixed(1) + " KM", finalPrice, cName, cPhone, pickup, dropoff, filtered);
-        btn.innerText = "Calculate Rate & Find Drivers";
-
-    } catch (err) {
-        alert("Error finding locations.");
-        btn.innerText = "Calculate Rate & Find Drivers";
-    }
+        renderResults(dist.toFixed(1), price, name, phone, pick, drop, filtered);
+    } catch (e) { alert("Location error"); }
 };
 
-function renderDriverResults(distLabel, price, cName, cPhone, pick, drop, drivers) {
+function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
     const list = document.getElementById('driverList');
     list.innerHTML = `
-        <div class="bg-purple-900 text-white p-5 rounded-2xl flex justify-between shadow-lg mb-6">
-            <span>Distance: ${distLabel}</span>
-            <span>Total: KES ${price}</span>
+        <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 flex justify-between">
+            <span>Dist: ${dist} KM</span><span>Total: KES ${price}</span>
         </div>
         ${drivers.map(d => `
-            <div class="bg-white p-5 rounded-2xl border flex justify-between items-center shadow-sm mb-4">
+            <div class="bg-white p-4 rounded-xl border mb-2 flex justify-between items-center">
                 <div>
-                    <h4 class="font-bold text-gray-800">${d.name}</h4>
-                    <p class="text-xs text-purple-600 font-bold uppercase">${d.vehicle} • ${d.plate}</p>
+                    <h4 class="font-bold">${d.name}</h4>
+                    <p class="text-xs text-purple-600 font-bold uppercase">${d.model} • ${d.plate}</p>
                 </div>
-                <button onclick="window.confirmAndBook('${d.name}', ${price}, '${cName}', '${cPhone}', '${pick}', '${drop}')" 
-                    class="bg-purple-600 text-white px-6 py-2 rounded-xl font-bold">Book</button>
-            </div>`).join('')}
+                <button onclick="window.confirmBooking('${d.name}', '${d.model}', ${price}, '${cName}', '${cPhone}', '${pick}', '${drop}')" 
+                    class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">Book</button>
+            </div>
+        `).join('')}
     `;
 }
 
-// --- GLOBAL EXPOSURE (Fixes the javascript:void(0) error) ---
-window.confirmAndBook = async (dName, price, cName, cPhone, pick, drop) => {
-    const booking = { name: cName, phone: cPhone, pickup: pick, destination: drop, vehicle: dName, price: price };
-    
-    // Save to Sheet
+window.confirmBooking = async (dName, dModel, price, cName, cPhone, pick, drop) => {
+    const booking = { name: cName, phone: cPhone, pickup: pick, destination: drop, vehicle: `${dName} (${dModel})`, price: price };
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: "newBooking", ...booking }) });
 
-    // WhatsApp
-    const msg = encodeURIComponent(`*LIFTRUCK BOOKING*\nClient: ${cName}\nDriver: ${dName}\nRoute: ${pick} to ${drop}\nPrice: KES ${price}`);
+    const msg = encodeURIComponent(`*NEW BOOKING*\nClient: ${cName}\nDriver: ${dName}\nVehicle: ${dModel}\nRoute: ${pick} to ${drop}\nPrice: KES ${price}`);
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
-window.openTerms = function(type) {
-    const modal = document.getElementById('termsModal');
-    const title = document.getElementById('modalTitle');
-    const content = document.getElementById('modalContent');
-    
-    const terms = {
-        driver: `<p><b>Driver Terms:</b> Independent contractor status. You are responsible for cargo safety and traffic laws.</p>`,
-        client: `<p><b>Client Terms:</b> LifTruck is a platform. We connect you to drivers but are not the transporters.</p>`
-    };
-
-    title.innerText = type === 'driver' ? "Driver Terms" : "Client Terms";
-    content.innerHTML = terms[type];
-    modal.classList.remove('hidden');
-};
-
-window.closeTerms = () => document.getElementById('termsModal').classList.add('hidden');
-
-// Attach closing logic to modal buttons
-document.getElementById('closeModal').onclick = window.closeTerms;
-document.getElementById('modalOk').onclick = window.closeTerms;
-
-// Registration Logic
+// --- DRIVER REGISTRATION ---
 document.getElementById('driverForm').onsubmit = (e) => {
     e.preventDefault();
     const name = document.getElementById('dName').value;
     const phone = document.getElementById('dPhone').value;
-    const msg = encodeURIComponent(`*NEW DRIVER*\nName: ${name}\nPhone: ${phone}\nReady for verification.`);
+    const plate = document.getElementById('dPlate').value;
+    const model = document.getElementById('dModel').value; // THE NEW FIELD
+    const cat = document.getElementById('dVehType').value;
+
+    const msg = encodeURIComponent(`*NEW DRIVER*\nName: ${name}\nPhone: ${phone}\nPlate: ${plate}\nModel: ${model}\nCategory: ${cat.toUpperCase()}`);
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
+
+// --- DASHBOARD & TERMS ---
+async function loadDashboard() {
+    const dash = document.getElementById('clientDashboard');
+    if (!dash) return;
+    try {
+        const res = await fetch(`${SCRIPT_URL}?type=getDashboard`);
+        const data = await res.json();
+        dash.innerHTML = data.slice(-5).reverse().map(b => `
+            <div class="p-2 border-b flex justify-between text-xs">
+                <span>${b[2]} to ${b[3]}</span><span class="font-bold">${b[7]}</span>
+            </div>
+        `).join('');
+    } catch (e) { dash.innerHTML = "No recent moves."; }
+}
+
+window.openTerms = function(type) {
+    const modal = document.getElementById('termsModal');
+    document.getElementById('modalTitle').innerText = type === 'driver' ? "Driver Terms" : "Client Terms";
+    document.getElementById('modalContent').innerHTML = `<p>Legal information regarding LifTruck ${type} policy...</p>`;
+    modal.classList.remove('hidden');
+};
+
+window.closeTerms = () => document.getElementById('termsModal').classList.add('hidden');
+document.getElementById('closeModal').onclick = window.closeTerms;
+document.getElementById('modalOk').onclick = window.closeTerms;
+
+loadDashboard();
