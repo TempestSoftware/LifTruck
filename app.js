@@ -42,14 +42,23 @@ function getDistance(lat1, lon1, lat2, lon2) {
 // --- DATABASE FETCHING ---
 async function getLiveDrivers() {
     try {
+        // This calls the Apps Script we just updated
         const res = await fetch(`${SCRIPT_URL}?type=getDrivers`);
         const drivers = await res.json();
+        
+        // Map the approved drivers into the format the website uses
         return drivers.map(d => ({
-            name: d[0], phone: d[1], plate: d[2], vehicle: d[3], 
+            name: d[0], 
+            phone: d[1], 
+            plate: d[2], 
+            vehicle: d[3], 
             class: d[3].toLowerCase().includes('lorry') ? 'heavy' : 
                    d[3].toLowerCase().includes('pickup') ? 'large' : 'medium'
         }));
-    } catch (e) { return []; }
+    } catch (e) {
+        console.error("Database error:", e);
+        return []; 
+    }
 }
 
 // --- CLIENT LOGIC ---
