@@ -1,6 +1,6 @@
 import { PRICING_LOGIC } from './config.js';
 
-const SCRIPT_URL = "PASTE_YOUR_NEW_WEB_APP_URL_HERE"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1jnpJSUAMX8uBjhfz4ZcJIM0GFgVOD5A6c4EwdPhdWujq6T1nGhmP7LwNvezkHZsc7A/exec"; 
 const MK_WHATSAPP = "254794152875";
 
 // --- TABS & NAVIGATION ---
