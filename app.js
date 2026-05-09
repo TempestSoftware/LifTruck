@@ -131,11 +131,68 @@ async function loadDashboard() {
 
 window.openTerms = function(type) {
     const modal = document.getElementById('termsModal');
-    document.getElementById('modalTitle').innerText = type === 'driver' ? "Driver Terms" : "Client Terms";
-    document.getElementById('modalContent').innerHTML = `<p>Legal information regarding LifTruck ${type} policy...</p>`;
-    modal.classList.remove('hidden');
-};
+    const title = document.getElementById('modalTitle');
+    const content = document.getElementById('modalContent');
+    
+    // THE FULL LEGAL VAULT
+    const legalVault = {
+        driver: `
+            <div class="space-y-4 text-gray-700">
+                <p class="font-bold text-red-600 underline">Last updated: 5/6/2026</p>
+                <h4 class="font-bold">1. Introduction</h4>
+                <p>These Terms & Conditions apply to all truck owners, drivers, or transport service providers ("Drivers") who use the Platform to accept and complete delivery jobs. By registering, you agree to these terms.</p>
+                <h4 class="font-bold">2. Relationship Between Driver and Platform</h4>
+                <p>You are an independent contractor, not an employee. You provide transport services directly to the client. The Platform only facilitates matching and payment.</p>
+                <h4 class="font-bold">3. Driver Eligibility</h4>
+                <p>To join, Drivers must: Upload valid ID, Provide a valid driving license, Provide proof of vehicle ownership or authorization, Submit insurance documents. Providing false documents will lead to permanent suspension.</p>
+                <h4 class="font-bold">4. Obligations of Drivers</h4>
+                <p>Drivers agree to: Transport goods safely, Follow all traffic laws, Handle cargo with care, Arrive on time for pickup.</p>
+                <h4 class="font-bold">5. Responsibility for Goods</h4>
+                <p>You, the Driver, accept full responsibility for goods once handed over to you. You may be held liable for theft due to negligence, loss of goods, or damage caused by improper handling.</p>
+                <h4 class="font-bold">6. Prohibited Conduct</h4>
+                <p>Drivers may NOT: Carry unauthorized passengers, Demand extra payment outside the Platform, or Use alcohol/drugs while working.</p>
+                <h4 class="font-bold">7. Pricing and Earnings</h4>
+                <p>The Platform sets or suggests trip prices. Drivers earn the trip amount minus platform commission paid through mobile money.</p>
+                <h4 class="font-bold">8. Insurance Requirements</h4>
+                <p>Drivers must maintain valid motor insurance and report accidents immediately.</p>
+                <h4 class="font-bold">9. Liability</h4>
+                <p>Drivers are liable for goods damaged through negligence. The Platform does not cover losses unless the client purchased insurance.</p>
+                <h4 class="font-bold">10. Account Suspension</h4>
+                <p>Account may be suspended for fraud, overcharging, mishandling cargo, or illegal activities.</p>
+            </div>
+        `,
+        client: `
+            <div class="space-y-4 text-gray-700">
+                <p class="font-bold text-red-600 underline">Last updated: 5/6/2026</p>
+                <h4 class="font-bold">1. Introduction</h4>
+                <p>These Terms & Conditions govern the use of the platform that connects clients ("Users") with independent truck owners. By using the Platform, you agree to these terms.</p>
+                <h4 class="font-bold">2. Service Description</h4>
+                <p>The Platform is not a transporter. It does not own vehicles or employ Drivers. It only connects Users with Drivers.</p>
+                <h4 class="font-bold">3. Booking Transport Services</h4>
+                <p>Users must provide accurate information (weight, destination). Misleading information may result in additional charges.</p>
+                <h4 class="font-bold">4. Payments</h4>
+                <p>All payments must be made through the Platform (M-Pesa/Card). Payment confirms acceptance of service.</p>
+                <h4 class="font-bold">5. User Responsibilities</h4>
+                <p>You agree to provide correct cargo details and ensure goods are properly packaged. Improper packaging leads to denial of compensation.</p>
+                <h4 class="font-bold">6. Liability for Goods</h4>
+                <p>The Platform is not liable for damage, theft, loss, or delays. The Driver is primarily responsible once in possession of goods.</p>
+                <h4 class="font-bold">7. Insurance</h4>
+                <p>Clients may purchase optional cargo insurance. If declined, they accept full risk for theft or damage.</p>
+                <h4 class="font-bold">8. Cancellation Policy</h4>
+                <p>Once a Driver is assigned, cancellation may attract a fee.</p>
+                <h4 class="font-bold">9. Dispute Resolution</h4>
+                <p>Disputes must be raised within 24–48 hours of delivery through the Platform support system.</p>
+                <h4 class="font-bold">10. Prohibited Goods</h4>
+                <p>Illegal drugs, weapons, bulk cash, and hazardous materials are strictly prohibited.</p>
+            </div>
+        `
+    };
 
+    title.innerText = type === 'driver' ? "Truck Owner / Driver Terms" : "Client Terms & Conditions";
+    content.innerHTML = legalVault[type];
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Stop background scrolling
+};
 window.closeTerms = () => document.getElementById('termsModal').classList.add('hidden');
 document.getElementById('closeModal').onclick = window.closeTerms;
 document.getElementById('modalOk').onclick = window.closeTerms;
