@@ -29,38 +29,7 @@ export const PRICING_LOGIC = {
 // 2. The Active Fleet (This is what shows up on the website)
 // When MK approves a driver, you add them here.
 export const initialDrivers = [
-    { 
-        id: 1, 
-        name: "John Kariuki", 
-        vehicle: "Toyota Probox", 
-        plate: "KCP 442Z", 
-        class: "small", 
-        status: "Available" 
-    },
-    { 
-        id: 2, 
-        name: "John Kariuki", 
-        vehicle: "Toyota Probox", 
-        plate: "KCP 442Z", 
-        class: "medium", 
-        status: "Available" 
-    },
-    { 
-        id: 3, 
-        name: "Sarah Wanjiku", 
-        vehicle: "Isuzu FRR", 
-        plate: "KDD 901L", 
-        class: "large", 
-        status: "Available" 
-    },
-    { 
-        id: 4, 
-        name: "Mike’s Logistics", 
-        vehicle: "Mercedes Actros", 
-        plate: "ZEE 554A", 
-        class: "heavy", 
-        status: "Occupied" // This driver won't show up on the client side!
-    }
+   
 ];
 
 // 3. Document Checklist (For the WhatsApp Bridge)
