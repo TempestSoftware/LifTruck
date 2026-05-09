@@ -209,4 +209,22 @@ window.closeTerms = () => document.getElementById('termsModal').classList.add('h
 document.getElementById('closeModal').onclick = window.closeTerms;
 document.getElementById('modalOk').onclick = window.closeTerms;
 
+// Add this inside your loadDashboard() function where it maps the data
+dash.innerHTML = data.slice(-5).reverse().map(b => {
+    let statusColor = "text-gray-500"; // Default
+    if (b[9] === "Pending") statusColor = "text-orange-500";
+    if (b[9] === "En Route to Pickup" || b[9] === "Goods Loaded") statusColor = "text-blue-600";
+    if (b[9] === "Delivered") statusColor = "text-green-600 font-bold";
+
+    return `
+        <div class="flex justify-between items-center p-3 border-b text-xs bg-white mb-2 rounded-lg shadow-sm">
+            <div>
+                <p class="font-bold text-gray-800">${b[3]} → ${b[4]}</p>
+                <p class="text-[10px] text-gray-400 uppercase">${b[6]} • ${b[0].toLocaleString()}</p>
+            </div>
+            <span class="${statusColor} font-black text-[10px] uppercase">${b[9]}</span>
+        </div>
+    `;
+}).join('');
+
 loadDashboard();
