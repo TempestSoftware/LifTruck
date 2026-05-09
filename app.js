@@ -93,11 +93,23 @@ function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
     `;
 }
 
-window.confirmBooking = async (dName, dModel, price, cName, cPhone, pick, drop) => {
-    const booking = { name: cName, phone: cPhone, pickup: pick, destination: drop, vehicle: `${dName} (${dModel})`, price: price };
-    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: "newBooking", ...booking }) });
-
-    const msg = encodeURIComponent(`*NEW BOOKING*\nClient: ${cName}\nDriver: ${dName}\nVehicle: ${dModel}\nRoute: ${pick} to ${drop}\nPrice: KES ${price}`);
+window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
+    const booking = { 
+        type: "newBooking",
+        name: cName, 
+        phone: cPhone, 
+        pickup: pick, 
+        destination: drop, 
+        category: document.getElementById('weightSelect').value,
+        vehicleModel: dModel,
+        driverPhone: dPhone, // This ensures it goes to Column I
+        distance: dist 
+    };
+    
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(booking) });
+    
+    // WhatsApp to MK
+    const msg = encodeURIComponent(`*NEW BOOKING*\nClient: ${cName}\nRoute: ${pick} to ${drop}\nDriver: ${dName}\nVehicle: ${dModel}`);
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
