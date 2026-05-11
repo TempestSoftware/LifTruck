@@ -26,12 +26,6 @@ export const PRICING_LOGIC = {
     }
 };
 
-// 2. The Active Fleet (This is what shows up on the website)
-// When MK approves a driver, you add them here.
-export const initialDrivers = [
-   
-];
-
 // 3. Document Checklist (For the WhatsApp Bridge)
 export const REQUIRED_DOCS = [
     "National ID (Front & Back)",
