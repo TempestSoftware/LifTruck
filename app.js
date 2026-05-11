@@ -114,15 +114,41 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
 };
 
 // --- DRIVER REGISTRATION ---
-document.getElementById('driverForm').onsubmit = (e) => {
+document.getElementById('driverForm').onsubmit = async (e) => {
     e.preventDefault();
-    const name = document.getElementById('dName').value;
-    const phone = document.getElementById('dPhone').value;
-    const plate = document.getElementById('dPlate').value;
-    const model = document.getElementById('dModel').value; // THE NEW FIELD
-    const cat = document.getElementById('dVehType').value;
+    
+    const driverData = {
+        type: "newDriver",
+        name: document.getElementById('dName').value,
+        phone: document.getElementById('dPhone').value,
+        plate: document.getElementById('dPlate').value,
+        model: document.getElementById('dModel').value,
+        category: document.getElementById('dVehType').value
+    };
 
-    const msg = encodeURIComponent(`*NEW DRIVER*\nName: ${name}\nPhone: ${phone}\nPlate: ${plate}\nModel: ${model}\nCategory: ${cat.toUpperCase()}`);
+    // 1. Save to Google Sheet first
+    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(driverData) });
+
+    // 2. The "Lawyer-Level" WhatsApp Checklist
+    const checklist = [
+        "✅ National ID (Front/Back)",
+        "✅ Valid Driving License",
+        "✅ Vehicle Logbook / Ownership Proof",
+        "✅ Current Insurance Certificate",
+        "✅ NTSA Inspection Report (For Heavy Trucks)"
+    ].join('\n');
+
+    const msg = encodeURIComponent(
+        `*LIFTRUCK DRIVER APPLICATION*\n` +
+        `--------------------------\n` +
+        `Name: ${driverData.name}\n` +
+        `Vehicle: ${driverData.model} (${driverData.plate})\n` +
+        `Category: ${driverData.category.toUpperCase()}\n\n` +
+        `*REQUIRED DOCUMENTS TO ATTACH:*\n${checklist}\n\n` +
+        `_I have registered on the portal and I am ready for verification._`
+    );
+
+    // 3. Send to MK
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
