@@ -36,15 +36,26 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 // --- DATABASE FETCH ---
+import { SCRIPT_URL, PRICING_LOGIC } from './config.js';
+
 async function getLiveDrivers() {
     try {
-        const res = await fetch(`${SCRIPT_URL}?type=getDrivers`);
-        const drivers = await res.json();
-        // Mapping: 0:Name, 1:Phone, 2:Plate, 3:Category, 4:Model
+        const response = await fetch(`${SCRIPT_URL}?type=getDrivers`);
+        const drivers = await response.json();
+        
+        // Mapping the Sheet columns to Javascript objects
+        // Column A:Name(0), B:Phone(1), C:Plate(2), D:Category(3), E:Model(4)
         return drivers.map(d => ({
-            name: d[0], phone: d[1], plate: d[2], category: d[3], model: d[4]
+            name: d[0],
+            phone: d[1],
+            plate: d[2],
+            category: d[3],
+            model: d[4]
         }));
-    } catch (e) { return []; }
+    } catch (error) {
+        console.error("Could not fetch drivers:", error);
+        return []; // Return empty list so the app doesn't crash
+    }
 }
 
 // --- CLIENT BOOKING ---
