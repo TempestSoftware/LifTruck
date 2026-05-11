@@ -36,11 +36,9 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 // --- DATABASE FETCH ---
-import { SCRIPT_URL, PRICING_LOGIC } from './config.js';
-
 async function getLiveDrivers() {
     try {
-        const response = await fetch(`${SCRIPT_URL}?type=getDrivers`);
+        const response = await fetch(`${SCRIPT_URL}?type=getDrivers&t=${Date.now()}`);
         const drivers = await response.json();
         
         // Mapping the Sheet columns to Javascript objects
