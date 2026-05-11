@@ -93,8 +93,8 @@ function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
     `;
 }
 
-window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
-    const booking = { 
+window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, rawDist) => {
+    const bookingPayload = { 
         type: "newBooking",
         name: cName, 
         phone: cPhone, 
@@ -102,14 +102,24 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         destination: drop, 
         category: document.getElementById('weightSelect').value,
         vehicleModel: dModel,
-        driverPhone: dPhone, // This ensures it goes to Column I
-        distance: dist 
+        driverPhone: dPhone, // Automatically captured from the "Find Driver" list
+        distance: rawDist 
     };
     
-    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(booking) });
+    // Background save to Google Sheet
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(bookingPayload) });
     
-    // WhatsApp to MK
-    const msg = encodeURIComponent(`*NEW BOOKING*\nClient: ${cName}\nRoute: ${pick} to ${drop}\nDriver: ${dName}\nVehicle: ${dModel}`);
+    // Professional WhatsApp to MK
+    const msg = encodeURIComponent(
+        `*NEW BOOKING REQUEST*\n` +
+        `----------------------\n` +
+        `Client: ${cName} (${cPhone})\n` +
+        `Route: ${pick} to ${drop}\n` +
+        `Distance: ${rawDist.toFixed(2)} KM\n` +
+        `Price: KES ${price}\n` +
+        `Vehicle: ${dModel}\n` +
+        `Assigned Driver Phone: ${dPhone}`
+    );
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
