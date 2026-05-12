@@ -127,14 +127,15 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
 // --- SECTION 6: DRIVER REGISTRATION ---
 document.getElementById('driverForm').onsubmit = async (e) => {
     e.preventDefault();
-    const driverData = {
+     const driverData = {
         type: "newDriver",
-        name: "Driver Pending", // You can add a name field to form if needed
-        phone: document.getElementById('dPlate').value, // Used plate as unique ID for now
+        name: document.getElementById('dName').value,
+        phone: document.getElementById('dPhone').value,
         plate: document.getElementById('dPlate').value,
         model: document.getElementById('dModel').value,
         category: document.getElementById('dVehType').value
     };
+
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(driverData) });
 
