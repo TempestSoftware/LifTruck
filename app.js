@@ -127,7 +127,7 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         `----------------------\n` +
         `Client: ${cName} (${cPhone})\n` +
         `Route: ${pick} to ${drop}\n` +
-        `Distance: ${rawDist.toFixed(2)} KM\n` +
+        `Distance: ${dist} KM\n` +
         `Price: KES ${price}\n` +
         `Vehicle: ${dModel}\n` +
         `Assigned Driver: ${dName} (${dPhone})`
