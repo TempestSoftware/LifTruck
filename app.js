@@ -60,22 +60,34 @@ document.getElementById('calculateBtn').onclick = async () => {
 
     if (!name || !phone || !pick || !drop) return alert("Fill all fields");
 
-    try {
+   try {
+        // We append "Kenya" only if not already present to help the search engine
+        const searchPick = pick.includes("Kenya") ? pick : `${pick}, Kenya`;
+        const searchDrop = drop.includes("Kenya") ? drop : `${drop}, Kenya`;
+
         const [r1, r2] = await Promise.all([
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pick + ", Kenya")}`),
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(drop + ", Kenya")}`)
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchPick)}`),
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchDrop)}`)
         ]);
+
         const d1 = await r1.json();
         const d2 = await r2.json();
 
-        const dist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
+        // Check if both locations were found
+        if (!d1[0] || !d2[0]) {
+            throw new Error(`Could not find: ${!d1[0] ? pick : drop}`);
+        }
+
+        const dist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3; // 1.3 accounts for road curves
         const price = Math.ceil(dist < 1 ? PRICING_LOGIC[cat].base : PRICING_LOGIC[cat].base + (dist * PRICING_LOGIC[cat].perKm));
 
         const allDrivers = await getLiveDrivers();
         const filtered = allDrivers.filter(d => d.category.toLowerCase() === cat.toLowerCase());
 
         renderResults(dist.toFixed(1), price, name, phone, pick, drop, filtered);
-    } catch (e) { alert("Location not found. Please be more specific (e.g. 'Section 9, Thika')"); }
+    } catch (e) { 
+        alert(e.message || "Location error. Try adding 'Thika' or 'Nairobi' to the address."); 
+    }
 };
 
 function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
