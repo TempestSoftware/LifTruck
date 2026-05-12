@@ -1,4 +1,9 @@
-// 1. Pricing & Weight Logic
+/**
+ * LIFTRUCK CONFIGURATION HUB
+ * Section: Pricing, Labels, and Legal Requirements
+ */
+
+// 1. Pricing & Weight Logic (KES)
 export const PRICING_LOGIC = {
     small: { 
         label: 'Small (Bike/Probox)', 
@@ -26,11 +31,14 @@ export const PRICING_LOGIC = {
     }
 };
 
-// 3. Document Checklist (For the WhatsApp Bridge)
+// 2. Document Checklist (For the WhatsApp Bridge)
 export const REQUIRED_DOCS = [
-    "National ID (Front & Back)",
-    "Driving License",
-    "NTSA Inspection Certificate",
-    "Vehicle Insurance",
-    "Vehicle Logbook"
+    "✅ National ID (Front & Back)",
+    "✅ Valid Driving License",
+    "✅ NTSA Inspection Certificate",
+    "✅ Valid Vehicle Insurance",
+    "✅ Vehicle Logbook"
 ];
+
+// 3. Business Contact
+export const MK_WHATSAPP = "254794152875";
