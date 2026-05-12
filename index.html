@@ -7,9 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .purple-gradient { background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); }
-        .input-field { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.2s; }
+        .input-field { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.2s; background: #fff; }
         .input-field:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
         .tab-active { border-bottom: 4px solid #7c3aed; color: #4c1d95; font-weight: 800; }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="bg-gray-50 pb-20">
@@ -18,7 +19,7 @@
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="bg-purple-900 text-white p-2 rounded-lg font-bold">LT</div>
-                <span class="text-xl font-black text-purple-900 uppercase italic">LifTruck</span>
+                <span class="text-xl font-black text-purple-900 uppercase italic tracking-tighter">LifTruck</span>
             </div>
             <div class="flex space-x-6 text-sm uppercase tracking-widest text-gray-400 font-bold">
                 <button id="tabBook" class="pb-1 tab-active" onclick="window.switchTab('book')">Client</button>
@@ -31,41 +32,41 @@
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
             <div class="purple-gradient p-8 text-white text-center">
                 <h1 class="text-2xl font-bold">Move Goods with Ease</h1>
-                <p class="text-purple-100 mt-1 italic text-sm">Instant rates for Thika, Nairobi & Beyond</p>
+                <p class="text-purple-100 mt-1 italic text-sm text-opacity-80">Instant rates for Thika, Nairobi & Beyond</p>
             </div>
 
             <div class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase">Your Name</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Your Name</label>
                         <input type="text" id="clientName" class="input-field" placeholder="Full Name">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase">Phone Number</label>
-                        <input type="tel" id="clientPhone" class="input-field" placeholder="0712345678">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Phone Number</label>
+                        <input type="tel" id="clientPhone" class="input-field" placeholder="0712 345 678">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase">Pickup Point</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Pickup Point</label>
                         <input type="text" id="pickup" class="input-field" placeholder="e.g., Section 9, Thika">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase">Destination</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Destination</label>
                         <input type="text" id="dropoff" class="input-field" placeholder="e.g., Juja City Mall">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase">Cargo Class</label>
-                    <select id="weightSelect" class="input-field">
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Cargo Class</label>
+                    <select id="weightSelect" class="input-field font-medium text-gray-700">
                         <option value="small">Small (Bike/Probox - Up to 50kg)</option>
                         <option value="medium" selected>Medium (Van/Pickup - Up to 500kg)</option>
                         <option value="large">Large (Light Truck - Up to 2 Tons)</option>
                         <option value="heavy">Heavy (Lorry - Over 2 Tons)</option>
                     </select>
                 </div>
-                <button id="calculateBtn" class="w-full purple-gradient text-white font-bold py-4 rounded-2xl shadow-lg hover:scale-[1.01] transition">
-                    Calculate Rate & Find Drivers
+                <button id="calculateBtn" class="w-full purple-gradient text-white font-black py-4 rounded-2xl shadow-lg hover:brightness-110 transition">
+                    CALCULATE RATE & FIND DRIVERS
                 </button>
             </div>
         </div>
@@ -73,13 +74,10 @@
         <div id="driverList" class="mt-8 space-y-4"></div>
 
         <div class="mt-10 p-6 bg-white rounded-3xl shadow-xl border border-purple-100">
-            <h3 class="text-lg font-bold text-purple-900 mb-4">Live Tracking Dashboard</h3>
-            <div id="clientDashboard" class="space-y-3">
-                <p class="text-gray-400 italic text-sm text-center">Loading your moves...</p>
-            </div>
-            <p class="text-center text-xs text-gray-400 mt-6">
-                By using LifTruck, you agree to the 
-                <a href="javascript:void(0)" onclick="window.openTerms('client')" class="text-purple-700 underline font-bold">Client Terms</a>
+            <h3 class="text-sm font-black text-purple-900 mb-4 uppercase tracking-widest">Live Activity</h3>
+            <div id="clientDashboard" class="space-y-3"></div>
+            <p class="text-center text-[10px] text-gray-400 mt-6 font-medium">
+                Protected by <a href="javascript:void(0)" onclick="window.openTerms('client')" class="text-purple-700 underline">Client Terms</a>
             </p>
         </div>
     </section>
@@ -87,14 +85,10 @@
     <section id="driverSection" class="max-w-4xl mx-auto p-6 hidden">
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
             <div class="bg-indigo-950 p-8 text-white">
-                <h2 class="text-2xl font-bold italic">Join the Fleet</h2>
-                <p class="text-indigo-200 mt-1">Submit details for verification.</p>
+                <h2 class="text-2xl font-bold italic tracking-tighter">FLEET REGISTRATION</h2>
+                <p class="text-indigo-200 mt-1 text-sm">Submit your vehicle details for verification.</p>
             </div>
             <form id="driverForm" class="p-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="dName" placeholder="Full Name" class="input-field" required>
-                    <input type="tel" id="dPhone" placeholder="WhatsApp Number" class="input-field" required>
-                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input type="text" id="dPlate" placeholder="Plate (e.g. KDA 123X)" class="input-field" required>
                     <input type="text" id="dModel" placeholder="Vehicle Model (e.g. Toyota Probox)" class="input-field" required>
@@ -105,41 +99,38 @@
                     <option value="large">Category: Large (Light Truck)</option>
                     <option value="heavy">Category: Heavy (Lorry)</option>
                 </select>
-                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-6">
-    <h4 class="text-xs font-black text-indigo-900 uppercase mb-2">Verification Checklist</h4>
-    <ul class="text-[10px] text-indigo-700 space-y-1 font-medium">
-        <li>• You must have a valid Smartphone with WhatsApp</li>
-        <li>• Have your ID & Driving License ready to upload</li>
-        <li>• Vehicle must have valid Insurance & Inspection</li>
-    </ul>
-</div>
-                <button type="submit" class="w-full bg-indigo-900 text-white font-bold py-4 rounded-2xl">
-                    Register as Driver
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                    <h4 class="text-[10px] font-black text-indigo-900 uppercase mb-2">Fleet Requirements</h4>
+                    <ul class="text-[10px] text-indigo-700 space-y-1 font-medium">
+                        <li>• Valid Driving License & ID</li>
+                        <li>• Proof of Ownership (Logbook)</li>
+                        <li>• Current Vehicle Insurance</li>
+                    </ul>
+                </div>
+                <button type="submit" class="w-full bg-indigo-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-black transition">
+                    REGISTER AS PARTNER
                 </button>
-                <p class="text-center text-xs text-gray-500">
-                    Subject to <a href="javascript:void(0)" onclick="window.openTerms('driver')" class="text-indigo-700 underline font-bold">Partner Terms</a>
+                <p class="text-center text-[10px] text-gray-500 font-medium uppercase tracking-tighter">
+                    Subject to <a href="javascript:void(0)" onclick="window.openTerms('driver')" class="text-indigo-700 underline">Partner Terms</a>
                 </p>
             </form>
         </div>
     </section>
 
-   <div id="termsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-        <div class="purple-gradient p-6 text-white flex justify-between items-center flex-shrink-0">
-            <h2 id="modalTitle" class="text-xl font-bold italic uppercase tracking-tight">Legal Terms</h2>
-            <button onclick="window.closeTerms()" class="text-white bg-white/20 p-2 rounded-full hover:bg-white/40">✕</button>
-        </div>
-        
-        <div id="modalContent" class="p-8 overflow-y-auto bg-gray-50 leading-relaxed text-gray-800">
+    <div id="termsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="purple-gradient p-6 text-white flex justify-between items-center">
+                <h2 id="modalTitle" class="text-lg font-bold italic uppercase">Legal Vault</h2>
+                <button onclick="window.closeTerms()" class="text-white hover:rotate-90 transition">✕</button>
             </div>
-        
-        <div class="p-4 border-t bg-white text-center flex-shrink-0">
-            <button onclick="window.closeTerms()" class="w-full purple-gradient text-white py-3 rounded-2xl font-bold shadow-lg">
-                I AGREE TO THESE TERMS
-            </button>
+            <div id="modalContent" class="p-8 overflow-y-auto bg-gray-50 leading-relaxed text-gray-800"></div>
+            <div class="p-4 border-t bg-white">
+                <button onclick="window.closeTerms()" class="w-full purple-gradient text-white py-4 rounded-2xl font-black shadow-lg">
+                    I ACCEPT TERMS
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
     <script type="module" src="app.js"></script>
 </body>
