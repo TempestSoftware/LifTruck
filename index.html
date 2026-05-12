@@ -89,16 +89,37 @@
                 <p class="text-indigo-200 mt-1">Submit details for verification.</p>
             </div>
             <form id="driverForm" class="p-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="dPlate" placeholder="Plate (e.g. KDA 123X)" class="input-field" required>
-                    <input type="text" id="dModel" placeholder="Vehicle Model (e.g. Toyota Probox)" class="input-field" required>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Full Name</label>
+                    <input type="text" id="dName" placeholder="e.g. John Doe" class="input-field" required>
                 </div>
-                <select id="dVehType" class="input-field">
-                    <option value="small">Category: Small (Bike/Probox)</option>
-                    <option value="medium">Category: Medium (Van/Pickup)</option>
-                    <option value="large">Category: Large (Light Truck)</option>
-                    <option value="heavy">Category: Heavy (Lorry)</option>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">WhatsApp Phone</label>
+                    <input type="tel" id="dPhone" placeholder="e.g. 0712345678" class="input-field" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Vehicle Plate</label>
+                    <input type="text" id="dPlate" placeholder="e.g. KDA 123X" class="input-field" required>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Vehicle Model</label>
+                    <input type="text" id="dModel" placeholder="e.g. Toyota Probox" class="input-field" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Cargo Category</label>
+                <select id="dVehType" class="input-field font-medium text-gray-700">
+                    <option value="small">Small (Bike/Probox)</option>
+                    <option value="medium" selected>Medium (Van/Pickup)</option>
+                    <option value="large">Large (Light Truck)</option>
+                    <option value="heavy">Heavy (Lorry)</option>
                 </select>
+            </div>
                 <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-6">
     <h4 class="text-xs font-black text-indigo-900 uppercase mb-2">Verification Checklist</h4>
     <ul class="text-[10px] text-indigo-700 space-y-1 font-medium">
