@@ -115,7 +115,7 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         type: "newBooking",
         name: cName, phone: cPhone, pickup: pick, destination: drop, 
         category: document.getElementById('weightSelect').value,
-        vehicleModel: dModel, driverPhone: dPhone, distance: dist 
+        vehicleModel: dModel, driverPhone: dPhone, distance: dist, totalPrice: price 
     };
     
     // Save to Google Sheet
@@ -132,7 +132,11 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         `Vehicle: ${dModel}\n` +
         `Assigned Driver: ${dName} (${dPhone})`
     );
-    window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
+   const waUrl = `https://wa.me/${MK_WHATSAPP}?text=${encodeURIComponent(messageText)}`;
+} catch (error) {
+        console.error("Booking Error:", error);
+        alert("There was an error processing your booking. Please try again.");
+    }
 };
 
 // --- SECTION 6: DRIVER REGISTRATION ---
