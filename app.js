@@ -132,7 +132,8 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         `Vehicle: ${dModel}\n` +
         `Assigned Driver: ${dName} (${dPhone})`
     );
-  window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
+
+    window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
 
