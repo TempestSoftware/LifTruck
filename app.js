@@ -116,7 +116,7 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         `----------------------\n` +
         `Client: ${cName} (${cPhone})\n` +
         `Route: ${pick} to ${drop}\n` +
-        `Distance: ${dist} KM\n` +
+        `Distance: ${rawDist.toFixed(2)} KM\n` +
         `Price: KES ${price}\n` +
         `Vehicle: ${dModel}\n` +
         `Assigned Driver: ${dName} (${dPhone})`
@@ -139,11 +139,25 @@ document.getElementById('driverForm').onsubmit = async (e) => {
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(driverData) });
 
+      // 2. The "Lawyer-Level" WhatsApp Checklist
+    const checklist = [
+        "✅ National ID (Front/Back)",
+        "✅ Valid Driving License",
+        "✅ Vehicle Logbook / Ownership Proof",
+        "✅ Current Insurance Certificate",
+        "✅ NTSA Inspection Report (For Heavy Trucks)"
+    ].join('\n');
+
     const msg = encodeURIComponent(
         `*LIFTRUCK DRIVER APPLICATION*\n` +
-        `Vehicle: ${driverData.model} (${driverData.plate})\n\n` +
-        `*DOCUMENTS TO ATTACH:*\n${REQUIRED_DOCS.join('\n')}`
+        `--------------------------\n` +
+        `Name: ${driverData.name}\n` +
+        `Vehicle: ${driverData.model} (${driverData.plate})\n` +
+        `Category: ${driverData.category.toUpperCase()}\n\n` +
+        `*REQUIRED DOCUMENTS TO ATTACH:*\n${checklist}\n\n` +
+        `_I have registered on the portal and I am ready for verification._`
     );
+
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
