@@ -1,9 +1,13 @@
-import { PRICING_LOGIC } from './config.js';
+/**
+ * LIFTRUCK MASTER ENGINE - CORE LOGIC
+ * Section: Navigation, Math, Data Fetching, and Booking
+ */
+
+import { PRICING_LOGIC, MK_WHATSAPP, REQUIRED_DOCS } from './config.js';
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1jnpJSUAMX8uBjhfz4ZcJIM0GFgVOD5A6c4EwdPhdWujq6T1nGhmP7LwNvezkHZsc7A/exec"; 
-const MK_WHATSAPP = "254794152875";
 
-// --- TABS & NAVIGATION ---
+// --- SECTION 1: TABS & NAVIGATION ---
 window.switchTab = function(target) {
     const client = document.getElementById('clientSection');
     const driver = document.getElementById('driverSection');
@@ -22,10 +26,8 @@ window.switchTab = function(target) {
         tabD.classList.remove('tab-active');
     }
 };
-document.getElementById('tabBook').onclick = () => switchTab('book');
-document.getElementById('tabDrive').onclick = () => switchTab('drive');
 
-// --- MATH & DISTANCE ---
+// --- SECTION 2: GEOLOCATION MATH (Haversine Formula) ---
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -35,28 +37,21 @@ function getDistance(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-// --- DATABASE FETCH ---
+// --- SECTION 3: DATABASE FETCH (Live Drivers) ---
 async function getLiveDrivers() {
     try {
         const response = await fetch(`${SCRIPT_URL}?type=getDrivers&t=${Date.now()}`);
         const drivers = await response.json();
-        
-        // Mapping the Sheet columns to Javascript objects
-        // Column A:Name(0), B:Phone(1), C:Plate(2), D:Category(3), E:Model(4)
         return drivers.map(d => ({
-            name: d[0],
-            phone: d[1],
-            plate: d[2],
-            category: d[3],
-            model: d[4]
+            name: d[0], phone: d[1], plate: d[2], category: d[3], model: d[4]
         }));
     } catch (error) {
-        console.error("Could not fetch drivers:", error);
-        return []; // Return empty list so the app doesn't crash
+        console.error("Fetch Error:", error);
+        return [];
     }
 }
 
-// --- CLIENT BOOKING ---
+// --- SECTION 4: CLIENT BOOKING & CALCULATION ---
 document.getElementById('calculateBtn').onclick = async () => {
     const name = document.getElementById('clientName').value;
     const phone = document.getElementById('clientPhone').value;
@@ -71,119 +66,110 @@ document.getElementById('calculateBtn').onclick = async () => {
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pick + ", Kenya")}`),
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(drop + ", Kenya")}`)
         ]);
-        const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
+        const d1 = await r1.json();
+        const d2 = await r2.json();
 
         const dist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
         const price = Math.ceil(dist < 1 ? PRICING_LOGIC[cat].base : PRICING_LOGIC[cat].base + (dist * PRICING_LOGIC[cat].perKm));
 
         const allDrivers = await getLiveDrivers();
-        const filtered = allDrivers.filter(d => d.category === cat);
+        const filtered = allDrivers.filter(d => d.category.toLowerCase() === cat.toLowerCase());
 
         renderResults(dist.toFixed(1), price, name, phone, pick, drop, filtered);
-    } catch (e) { alert("Location error"); }
+    } catch (e) { alert("Location not found. Please be more specific (e.g. 'Section 9, Thika')"); }
 };
 
 function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
     const list = document.getElementById('driverList');
     list.innerHTML = `
-        <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 flex justify-between">
-            <span>Dist: ${dist} KM</span><span>Total: KES ${price}</span>
+        <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 flex justify-between shadow-lg">
+            <span>Distance: ${dist} KM</span><span>Total: KES ${price}</span>
         </div>
-        ${drivers.map(d => `
-            <div class="bg-white p-4 rounded-xl border mb-2 flex justify-between items-center">
+        ${drivers.length > 0 ? drivers.map(d => `
+            <div class="bg-white p-4 rounded-xl border mb-2 flex justify-between items-center shadow-sm">
                 <div>
-                    <h4 class="font-bold">${d.name}</h4>
+                    <h4 class="font-bold text-gray-800">${d.name}</h4>
                     <p class="text-xs text-purple-600 font-bold uppercase">${d.model} • ${d.plate}</p>
                 </div>
-                <button onclick="window.confirmBooking('${d.name}', '${d.model}', ${price}, '${cName}', '${cPhone}', '${pick}', '${drop}')" 
-                    class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">Book</button>
+                <button onclick="window.confirmBooking('${d.name}', '${d.model}', '${d.phone}', ${price}, '${cName}', '${cPhone}', '${pick}', '${drop}', ${dist})" 
+                    class="bg-purple-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-md">Book</button>
             </div>
-        `).join('')}
+        `).join('') : '<div class="p-4 bg-gray-100 rounded-xl text-center text-gray-500 italic">No approved drivers found in this category.</div>'}
     `;
 }
 
-window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, rawDist) => {
+// --- SECTION 5: DISPATCH (WhatsApp Bridge) ---
+window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
     const bookingPayload = { 
         type: "newBooking",
-        name: cName, 
-        phone: cPhone, 
-        pickup: pick, 
-        destination: drop, 
+        name: cName, phone: cPhone, pickup: pick, destination: drop, 
         category: document.getElementById('weightSelect').value,
-        vehicleModel: dModel,
-        driverPhone: dPhone, // Automatically captured from the "Find Driver" list
-        distance: rawDist 
+        vehicleModel: dModel, driverPhone: dPhone, distance: dist 
     };
     
-    // Background save to Google Sheet
+    // Save to Google Sheet
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(bookingPayload) });
     
-    // Professional WhatsApp to MK
+    // Send WhatsApp to MK
     const msg = encodeURIComponent(
         `*NEW BOOKING REQUEST*\n` +
         `----------------------\n` +
         `Client: ${cName} (${cPhone})\n` +
         `Route: ${pick} to ${drop}\n` +
-        `Distance: ${rawDist.toFixed(2)} KM\n` +
+        `Distance: ${dist} KM\n` +
         `Price: KES ${price}\n` +
         `Vehicle: ${dModel}\n` +
-        `Assigned Driver Phone: ${dPhone}`
+        `Assigned Driver: ${dName} (${dPhone})`
     );
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
-// --- DRIVER REGISTRATION ---
+// --- SECTION 6: DRIVER REGISTRATION ---
 document.getElementById('driverForm').onsubmit = async (e) => {
     e.preventDefault();
-    
     const driverData = {
         type: "newDriver",
-        name: document.getElementById('dName').value,
-        phone: document.getElementById('dPhone').value,
+        name: "Driver Pending", // You can add a name field to form if needed
+        phone: document.getElementById('dPlate').value, // Used plate as unique ID for now
         plate: document.getElementById('dPlate').value,
         model: document.getElementById('dModel').value,
         category: document.getElementById('dVehType').value
     };
 
-    // 1. Save to Google Sheet first
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(driverData) });
-
-    // 2. The "Lawyer-Level" WhatsApp Checklist
-    const checklist = [
-        "✅ National ID (Front/Back)",
-        "✅ Valid Driving License",
-        "✅ Vehicle Logbook / Ownership Proof",
-        "✅ Current Insurance Certificate",
-        "✅ NTSA Inspection Report (For Heavy Trucks)"
-    ].join('\n');
 
     const msg = encodeURIComponent(
         `*LIFTRUCK DRIVER APPLICATION*\n` +
-        `--------------------------\n` +
-        `Name: ${driverData.name}\n` +
-        `Vehicle: ${driverData.model} (${driverData.plate})\n` +
-        `Category: ${driverData.category.toUpperCase()}\n\n` +
-        `*REQUIRED DOCUMENTS TO ATTACH:*\n${checklist}\n\n` +
-        `_I have registered on the portal and I am ready for verification._`
+        `Vehicle: ${driverData.model} (${driverData.plate})\n\n` +
+        `*DOCUMENTS TO ATTACH:*\n${REQUIRED_DOCS.join('\n')}`
     );
-
-    // 3. Send to MK
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
 
-// --- DASHBOARD & TERMS ---
+// --- SECTION 7: DASHBOARD & LEGAL ---
 async function loadDashboard() {
     const dash = document.getElementById('clientDashboard');
     if (!dash) return;
     try {
-        const res = await fetch(`${SCRIPT_URL}?type=getDashboard`);
+        const res = await fetch(`${SCRIPT_URL}?type=getDashboard&t=${Date.now()}`);
         const data = await res.json();
-        dash.innerHTML = data.slice(-5).reverse().map(b => `
-            <div class="p-2 border-b flex justify-between text-xs">
-                <span>${b[2]} to ${b[3]}</span><span class="font-bold">${b[7]}</span>
-            </div>
-        `).join('');
-    } catch (e) { dash.innerHTML = "No recent moves."; }
+        
+        dash.innerHTML = data.slice(-5).reverse().map(b => {
+            let color = "text-gray-500";
+            if (b[10] === "Pending") color = "text-orange-500";
+            if (b[10] === "Delivered") color = "text-green-600 font-bold";
+
+            return `
+                <div class="flex justify-between items-center p-3 border-b text-xs bg-white mb-2 rounded-lg">
+                    <div>
+                        <p class="font-bold">${b[3]} → ${b[4]}</p>
+                        <p class="text-[10px] text-gray-400 italic">${b[6]}</p>
+                    </div>
+                    <span class="${color} uppercase font-black">${b[10]}</span>
+                </div>
+            `;
+        }).join('');
+    } catch (e) { dash.innerHTML = "Syncing with server..."; }
 }
 
 window.openTerms = function(type) {
@@ -191,9 +177,8 @@ window.openTerms = function(type) {
     const title = document.getElementById('modalTitle');
     const content = document.getElementById('modalContent');
     
-    // THE FULL LEGAL VAULT
     const legalVault = {
-        driver: `
+       driver: `
             <div class="space-y-4 text-gray-700">
                 <p class="font-bold text-red-600 underline">Last updated: 5/6/2026</p>
                 <h4 class="font-bold">1. Introduction</h4>
@@ -245,31 +230,10 @@ window.openTerms = function(type) {
         `
     };
 
-    title.innerText = type === 'driver' ? "Truck Owner / Driver Terms" : "Client Terms & Conditions";
+    title.innerText = type === 'driver' ? "Partner Terms & Conditions" : "Client Service Agreement";
     content.innerHTML = legalVault[type];
     modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; // Stop background scrolling
 };
+
 window.closeTerms = () => document.getElementById('termsModal').classList.add('hidden');
-document.getElementById('closeModal').onclick = window.closeTerms;
-document.getElementById('modalOk').onclick = window.closeTerms;
-
-// Add this inside your loadDashboard() function where it maps the data
-dash.innerHTML = data.slice(-5).reverse().map(b => {
-    let statusColor = "text-gray-500"; // Default
-    if (b[9] === "Pending") statusColor = "text-orange-500";
-    if (b[9] === "En Route to Pickup" || b[9] === "Goods Loaded") statusColor = "text-blue-600";
-    if (b[9] === "Delivered") statusColor = "text-green-600 font-bold";
-
-    return `
-        <div class="flex justify-between items-center p-3 border-b text-xs bg-white mb-2 rounded-lg shadow-sm">
-            <div>
-                <p class="font-bold text-gray-800">${b[3]} → ${b[4]}</p>
-                <p class="text-[10px] text-gray-400 uppercase">${b[6]} • ${b[0].toLocaleString()}</p>
-            </div>
-            <span class="${statusColor} font-black text-[10px] uppercase">${b[9]}</span>
-        </div>
-    `;
-}).join('');
-
 loadDashboard();
