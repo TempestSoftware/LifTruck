@@ -60,8 +60,8 @@ document.getElementById('calculateBtn').onclick = async () => {
 
     if (!name || !phone || !pick || !drop) return alert("Fill all fields");
 
-   try {
-        // We append "Kenya" only if not already present to help the search engine
+    try {
+        // IMPROVEMENT: Clean inputs and ensure Kenya is appended correctly
         const searchPick = pick.includes("Kenya") ? pick : `${pick}, Kenya`;
         const searchDrop = drop.includes("Kenya") ? drop : `${drop}, Kenya`;
 
@@ -73,20 +73,28 @@ document.getElementById('calculateBtn').onclick = async () => {
         const d1 = await r1.json();
         const d2 = await r2.json();
 
-        // Check if both locations were found
         if (!d1[0] || !d2[0]) {
-            throw new Error(`Could not find: ${!d1[0] ? pick : drop}`);
+            throw new Error(`Location not found. Try: Building, Town (e.g. Archives, Nairobi)`);
         }
 
-        const dist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3; // 1.3 accounts for road curves
-        const price = Math.ceil(dist < 1 ? PRICING_LOGIC[cat].base : PRICING_LOGIC[cat].base + (dist * PRICING_LOGIC[cat].perKm));
+        // PRICE CALCULATION (Keep this logic simple and consistent)
+        const rawDist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
+        const distFixed = rawDist.toFixed(1); // Use 1 decimal for display
+        
+        const base = PRICING_LOGIC[cat].base;
+        const perKm = PRICING_LOGIC[cat].perKm;
+        
+        // This is the FINAL price that must be passed everywhere
+        const finalPrice = Math.ceil(rawDist < 1 ? base : base + (rawDist * perKm));
 
         const allDrivers = await getLiveDrivers();
         const filtered = allDrivers.filter(d => d.category.toLowerCase() === cat.toLowerCase());
 
-        renderResults(dist.toFixed(1), price, name, phone, pick, drop, filtered);
+        // We pass 'finalPrice' here. It MUST be the same variable used in confirmBooking
+        renderResults(distFixed, finalPrice, name, phone, pick, drop, filtered);
+
     } catch (e) { 
-        alert(e.message || "Location error. Try adding 'Thika' or 'Nairobi' to the address."); 
+        alert(e.message); 
     }
 };
 
