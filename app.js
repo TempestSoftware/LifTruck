@@ -132,12 +132,9 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         `Vehicle: ${dModel}\n` +
         `Assigned Driver: ${dName} (${dPhone})`
     );
-   const waUrl = `https://wa.me/${MK_WHATSAPP}?text=${encodeURIComponent(messageText)}`;
-} catch (error) {
-        console.error("Booking Error:", error);
-        alert("There was an error processing your booking. Please try again.");
-    }
+  window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
+
 
 // --- SECTION 6: DRIVER REGISTRATION ---
 document.getElementById('driverForm').onsubmit = async (e) => {
