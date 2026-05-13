@@ -110,7 +110,7 @@ function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
                     <h4 class="font-bold text-gray-800">${d.name}</h4>
                     <p class="text-xs text-purple-600 font-bold uppercase">${d.model} • ${d.plate}</p>
                 </div>
-                <button onclick="window.confirmBooking('${d.name}', '${d.model}', '${d.phone}', ${price}, '${cName}', '${cPhone}', '${pick}', '${drop}', ${dist})" 
+                <button onclick="window.confirmBooking('${d.name}', '${d.model}', '${d.phone}', ${price}, '${cName}', '${cPhone}', '${pick}', '${drop}', ${rawDist})" 
                     class="bg-purple-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-md">Book</button>
             </div>
         `).join('') : '<div class="p-4 bg-gray-100 rounded-xl text-center text-gray-500 italic">No approved drivers found in this category.</div>'}
@@ -118,7 +118,7 @@ function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
 }
 
 // --- SECTION 5: DISPATCH (WhatsApp Bridge) ---
-window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
+window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, rawDist) => {
     const bookingPayload = { 
         type: "newBooking",
         name: cName, phone: cPhone, pickup: pick, destination: drop, 
@@ -135,7 +135,7 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         `----------------------\n` +
         `Client: ${cName} (${cPhone})\n` +
         `Route: ${pick} to ${drop}\n` +
-        `Distance: ${dist} KM\n` +
+        `Distance: ${rawDist.toFixed(2)} KM\n` +
         `Price: KES ${price}\n` +
         `Vehicle: ${dModel}\n` +
         `Assigned Driver: ${dName} (${dPhone})`
