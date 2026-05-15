@@ -101,22 +101,25 @@ document.getElementById('calculateBtn').onclick = async () => {
 function renderResults(dist, price, name, phone, pick, drop, drivers) {
     const list = document.getElementById('driverList');
     list.innerHTML = `
-        <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 flex justify-between shadow-lg">
-            <span>Distance: ${dist} KM</span><span>Total: KES ${price}</span>
+        <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 flex justify-between shadow-lg font-black uppercase tracking-tighter">
+            <span>Distance: ${dist} KM</span>
+            <span>Total: KES ${price}</span>
         </div>
+        
         ${drivers.length > 0 ? drivers.map(d => `
-            <div class="bg-white p-4 rounded-xl border mb-2 flex justify-between items-center shadow-sm">
+            <div class="bg-white p-4 rounded-xl border border-purple-100 mb-2 flex justify-between items-center shadow-sm">
                 <div>
                     <h4 class="font-bold text-gray-800">${d.name}</h4>
-                    <p class="text-xs text-purple-600 font-bold uppercase">${d.model} • ${d.plate}</p>
+                    <p class="text-[10px] text-purple-600 font-black uppercase">${d.model} • ${d.plate}</p>
                 </div>
                 <button onclick="window.confirmBooking('${d.name}', '${d.model}', '${d.phone}', ${price}, '${name}', '${phone}', '${pick}', '${drop}', ${dist})" 
-                    class="bg-purple-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-md">Book</button>
+                    class="bg-purple-600 text-white px-6 py-2 rounded-xl text-sm font-black shadow-md hover:bg-black transition">
+                    Book
+                </button>
             </div>
-        `).join('') : '<div class="p-4 bg-gray-100 rounded-xl text-center text-gray-500 italic">No approved drivers found in this category.</div>'}
+        `).join('') : '<div class="p-6 text-center text-gray-400 bg-white rounded-xl italic">No drivers found for this category.</div>'}
     `;
 }
-
 // --- SECTION 5: DISPATCH (WhatsApp Bridge) ---
 window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
     const bookingPayload = { 
