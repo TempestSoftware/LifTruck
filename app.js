@@ -74,31 +74,30 @@ document.getElementById('calculateBtn').onclick = async () => {
         const d2 = await r2.json();
 
         if (!d1[0] || !d2[0]) {
-            throw new Error(`Location not found. Try: Building, Town (e.g. Archives, Nairobi)`);
+            throw new Error(`Location not found. Please use format: 'Specific Place, Town' (e.g. Archives, Nairobi)`);
         }
 
         // PRICE CALCULATION (Keep this logic simple and consistent)
         const rawDist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
-        const distFixed = rawDist.toFixed(1); // Use 1 decimal for display
+        const displayDist = rawDist.toFixed(1); // Use 1 decimal for display
         
         const base = PRICING_LOGIC[cat].base;
         const perKm = PRICING_LOGIC[cat].perKm;
-        
-        // This is the FINAL price that must be passed everywhere
         const finalPrice = Math.ceil(rawDist < 1 ? base : base + (rawDist * perKm));
+
 
         const allDrivers = await getLiveDrivers();
         const filtered = allDrivers.filter(d => d.category.toLowerCase() === cat.toLowerCase());
 
         // We pass 'finalPrice' here. It MUST be the same variable used in confirmBooking
-        renderResults(distFixed, finalPrice, name, phone, pick, drop, filtered);
+        renderResults(displayDist, finalPrice, cname, cphone, pick, drop, filtered);
 
     } catch (e) { 
         alert(e.message); 
     }
 };
 
-function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
+function renderResults(dist, price, name, phone, pick, drop, drivers) {
     const list = document.getElementById('driverList');
     list.innerHTML = `
         <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 flex justify-between shadow-lg">
@@ -110,7 +109,7 @@ function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
                     <h4 class="font-bold text-gray-800">${d.name}</h4>
                     <p class="text-xs text-purple-600 font-bold uppercase">${d.model} • ${d.plate}</p>
                 </div>
-                <button onclick="window.confirmBooking('${d.name}', '${d.model}', '${d.phone}', ${price}, '${cName}', '${cPhone}', '${pick}', '${drop}', ${rawDist})" 
+                <button onclick="window.confirmBooking('${d.name}', '${d.model}', '${d.phone}', ${price}, '${name}', '${phone}', '${pick}', '${drop}', ${dist})" 
                     class="bg-purple-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-md">Book</button>
             </div>
         `).join('') : '<div class="p-4 bg-gray-100 rounded-xl text-center text-gray-500 italic">No approved drivers found in this category.</div>'}
@@ -118,7 +117,7 @@ function renderResults(dist, price, cName, cPhone, pick, drop, drivers) {
 }
 
 // --- SECTION 5: DISPATCH (WhatsApp Bridge) ---
-window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, rawDist) => {
+window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
     const bookingPayload = { 
         type: "newBooking",
         name: cName, phone: cPhone, pickup: pick, destination: drop, 
@@ -135,7 +134,7 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         `----------------------\n` +
         `Client: ${cName} (${cPhone})\n` +
         `Route: ${pick} to ${drop}\n` +
-        `Distance: ${rawDist.toFixed(2)} KM\n` +
+        `Distance: ${dist} KM\n` +
         `Price: KES ${price}\n` +
         `Vehicle: ${dModel}\n` +
         `Assigned Driver: ${dName} (${dPhone})`
