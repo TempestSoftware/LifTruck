@@ -78,6 +78,7 @@ document.getElementById('calculateBtn').onclick = async () => {
         }
 
         // PRICE CALCULATION (Keep this logic simple and consistent)
+        (With 30% Buffer for road curves)
         const rawDist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
         const displayDist = rawDist.toFixed(1); // Use 1 decimal for display
         
