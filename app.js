@@ -99,10 +99,21 @@ document.getElementById('calculateBtn').onclick = async () => {
 
 function renderResults(dist, price, name, phone, pick, drop, drivers) {
     const list = document.getElementById('driverList');
+    // STRATEGY: Define your commission rate here (e.g., 15% = 0.15)
+    const COMMISSION_RATE = 0.15; 
+    const mkShare = Math.floor(price * COMMISSION_RATE);
+    const driverShare = price - mkShare;
+    
     list.innerHTML = `
-        <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 flex justify-between shadow-lg font-black uppercase tracking-tighter">
-            <span>Distance: ${dist} KM</span>
-            <span>Total: KES ${price}</span>
+        <div class="bg-purple-900 text-white p-4 rounded-xl mb-4 shadow-lg font-black uppercase tracking-tighter">
+            <div class="flex justify-between">
+                <span>Distance: ${dist} KM</span>
+                <span>Total: KES ${price}</span>
+            </div>
+            <div class="flex justify-between text-[10px] text-purple-300 mt-2 border-t border-purple-800 pt-2 font-bold tracking-normal normal-case">
+                <span>Driver Payout: KES ${driverShare} (85%)</span>
+                <span>Platform Fee (MK): KES ${mkShare} (15%)</span>
+            </div>
         </div>
         
         ${drivers.length > 0 ? drivers.map(d => `
@@ -131,18 +142,27 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
     
     // Save to Google Sheet
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(bookingPayload) });
+
+    // Inside window.confirmBooking, replace the msg declaration with this:
+const commission = Math.floor(price * 0.15); // Matches the 15% model
+const driverTakehome = price - commission;
+
+const msg = encodeURIComponent(
+    `*NEW BOOKING REQUEST*\n` +
+    `----------------------\n` +
+    `Client: ${cName} (${cPhone})\n` +
+    `Route: ${pick} to ${drop}\n` +
+    `Distance: ${dist} KM\n\n` +
+    `*FINANCIAL BREAKDOWN*\n` +
+    `Total Price: KES ${price}\n` +
+    `Driver Payout: KES ${driverTakehome}\n` +
+    `LifTruck Fee (MK): KES ${commission}\n\n` +
+    `*ASSIGNED FLEET*\n` +
+    `Vehicle: ${dModel}\n` +
+    `Driver: ${dName} (${dPhone})`
+);
     
-    // Send WhatsApp to MK
-    const msg = encodeURIComponent(
-        `*NEW BOOKING REQUEST*\n` +
-        `----------------------\n` +
-        `Client: ${cName} (${cPhone})\n` +
-        `Route: ${pick} to ${drop}\n` +
-        `Distance: ${dist} KM\n` +
-        `Price: KES ${price}\n` +
-        `Vehicle: ${dModel}\n` +
-        `Assigned Driver: ${dName} (${dPhone})`
-    );
+    
 
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
