@@ -133,19 +133,27 @@ function renderResults(dist, price, name, phone, pick, drop, drivers) {
 
 // --- SECTION 5: DISPATCH (WhatsApp Bridge) ---
 window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
+    // Calculate financial splits for database logging
+    const commission = Math.floor(price * 0.15); // 15% LifTruck Fee
+    const driverShare = price - commission;      // 85% Driver Take-home
+    
     const bookingPayload = { 
         type: "newBooking",
-        name: cName, phone: cPhone, pickup: pick, destination: drop, 
+        name: cName, 
+        phone: cPhone, 
+        pickup: pick, 
+        destination: drop, 
         category: document.getElementById('weightSelect').value,
-        vehicleModel: dModel, driverPhone: dPhone, distance: dist, totalPrice: price 
+        vehicleModel: dModel, 
+        driverPhone: dPhone, 
+        distance: dist, 
+        totalPrice: price,
+        driverCut: driverShare,  // Sent to Column L
+        platformFee: commission  // Sent to Column M
     };
     
     // Save to Google Sheet
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(bookingPayload) });
-
-    // Inside window.confirmBooking, replace the msg declaration with this:
-const commission = Math.floor(price * 0.15); // Matches the 15% model
-const driverTakehome = price - commission;
 
 const msg = encodeURIComponent(
     `*NEW BOOKING REQUEST*\n` +
