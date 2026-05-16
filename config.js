@@ -7,26 +7,26 @@
 export const PRICING_LOGIC = {
     small: { 
         label: 'Small (Bike/Probox)', 
-        base: 300, 
-        perKm: 30, 
+        base: 200, 
+        perKm: 35, 
         maxWeight: 50 
     },
     medium: { 
         label: 'Medium (Van/Pickup)', 
         base: 600, 
-        perKm: 50, 
+        perKm: 55, 
         maxWeight: 500 
     },
     large: { 
         label: 'Large (Light Truck)', 
-        base: 1200, 
-        perKm: 80, 
+        base: 1500, 
+        perKm: 85, 
         maxWeight: 2000 
     },
     heavy: { 
         label: 'Heavy (Lorry)', 
-        base: 2500, 
-        perKm: 150, 
+        base: 3500, 
+        perKm: 130, 
         maxWeight: 10000 
     }
 };
