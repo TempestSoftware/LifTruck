@@ -74,7 +74,7 @@ document.getElementById('calculateBtn').onclick = async () => {
         const d2 = await r2.json();
 
         if (!d1[0] || !d2[0]) {
-            throw new Error(`Location not found. Please use format: 'Specific Place, Town' (e.g. Archives, Nairobi)`);
+            throw new Error(`Location not found. Please use format: 'Town, Specific Place' for Pickup Point (e.g. Thika, Runda) and 'Specific Place, Town' for Destination (e.g. Archives, Nairobi)`);
         }
 
         // PRICE CALCULATION (Fixed comment line syntax error)
