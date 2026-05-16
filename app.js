@@ -77,8 +77,8 @@ document.getElementById('calculateBtn').onclick = async () => {
             throw new Error(`Location not found. Please use format: 'Specific Place, Town' (e.g. Archives, Nairobi)`);
         }
 
-        // PRICE CALCULATION (Keep this logic simple and consistent)
-        (With 30% Buffer for road curves)
+        // PRICE CALCULATION (Fixed comment line syntax error)
+        // With 30% Buffer for road curves
         const rawDist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
         const displayDist = rawDist.toFixed(1); // Use 1 decimal for display
         
@@ -86,12 +86,11 @@ document.getElementById('calculateBtn').onclick = async () => {
         const perKm = PRICING_LOGIC[cat].perKm;
         const finalPrice = Math.ceil(rawDist < 1 ? base : base + (rawDist * perKm));
 
-
         const allDrivers = await getLiveDrivers();
         const filtered = allDrivers.filter(d => d.category.toLowerCase() === cat.toLowerCase());
 
-        // We pass 'finalPrice' here. It MUST be the same variable used in confirmBooking
-        renderResults(displayDist, finalPrice, cname, cphone, pick, drop, filtered);
+        // FIX: Changed 'cname' and 'cphone' to match declared variables 'name' and 'phone'
+        renderResults(displayDist, finalPrice, name, phone, pick, drop, filtered);
 
     } catch (e) { 
         alert(e.message); 
@@ -120,6 +119,7 @@ function renderResults(dist, price, name, phone, pick, drop, drivers) {
         `).join('') : '<div class="p-6 text-center text-gray-400 bg-white rounded-xl italic">No drivers found for this category.</div>'}
     `;
 }
+
 // --- SECTION 5: DISPATCH (WhatsApp Bridge) ---
 window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
     const bookingPayload = { 
@@ -160,10 +160,9 @@ document.getElementById('driverForm').onsubmit = async (e) => {
         category: document.getElementById('dVehType').value
     };
 
-
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(driverData) });
 
-      // 2. The "Lawyer-Level" WhatsApp Checklist
+    // 2. The "Lawyer-Level" WhatsApp Checklist
     const checklist = [
         "✅ National ID (Front/Back)",
         "✅ Valid Driving License",
@@ -242,7 +241,7 @@ window.openTerms = function(type) {
                 <p>Account may be suspended for fraud, overcharging, mishandling cargo, or illegal activities.</p>
             </div>
         `,
-        client: `
+       client: `
             <div class="space-y-4 text-gray-700">
                 <p class="font-bold text-red-600 underline">Last updated: 5/6/2026</p>
                 <h4 class="font-bold">1. Introduction</h4>
