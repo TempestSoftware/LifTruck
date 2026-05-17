@@ -61,9 +61,9 @@ document.getElementById('calculateBtn').onclick = async () => {
     if (!name || !phone || !pick || !drop) return alert("Fill all fields");
 
     try {
-        // IMPROVEMENT: Clean inputs and ensure Kenya is appended correctly
-        const searchPick = pick.includes("Kenya") ? pick : `${pick}, Kenya`;
-        const searchDrop = drop.includes("Kenya") ? drop : `${drop}, Kenya`;
+        // IMPROVEMENT: Query Anchoring optimization to lock search bounds directly into your operational hubs
+        const searchPick = pick.toLowerCase().includes("kenya") ? pick : `${pick}, Kiambu, Nairobi, Kenya`;
+        const searchDrop = drop.toLowerCase().includes("kenya") ? drop : `${drop}, Kiambu, Nairobi, Kenya`;
 
         const [r1, r2] = await Promise.all([
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchPick)}`),
@@ -73,14 +73,17 @@ document.getElementById('calculateBtn').onclick = async () => {
         const d1 = await r1.json();
         const d2 = await r2.json();
 
+        // Safe error handling to assist clients with unmapped village or estate layout issues
         if (!d1[0] || !d2[0]) {
-            throw new Error(`Location not found. Please use format: 'Town, Specific Place' for Pickup Point (e.g. Thika, Runda) and 'Specific Place, Town' for Destination (e.g. Archives, Nairobi)`);
+            throw new Error(
+                "📍 Location Mapping Notice!\n\n" +
+                "We couldn't map those exact coordinates. If you are entering a specific plot or unmapped estate, please try inputting the nearest known landmark, main stage, or fuel station instead (e.g., 'Total Energies, Juja' or 'Section 9, Thika')."
+            );
         }
 
-        // PRICE CALCULATION (Fixed comment line syntax error)
-        // With 30% Buffer for road curves
+        // Distance math with your 30% road curvature buffer adjustment
         const rawDist = getDistance(d1[0].lat, d1[0].lon, d2[0].lat, d2[0].lon) * 1.3;
-        const displayDist = rawDist.toFixed(1); // Use 1 decimal for display
+        const displayDist = rawDist.toFixed(1); 
         
         const base = PRICING_LOGIC[cat].base;
         const perKm = PRICING_LOGIC[cat].perKm;
@@ -89,7 +92,6 @@ document.getElementById('calculateBtn').onclick = async () => {
         const allDrivers = await getLiveDrivers();
         const filtered = allDrivers.filter(d => d.category.toLowerCase() === cat.toLowerCase());
 
-        // FIX: Changed 'cname' and 'cphone' to match declared variables 'name' and 'phone'
         renderResults(displayDist, finalPrice, name, phone, pick, drop, filtered);
 
     } catch (e) { 
@@ -99,7 +101,6 @@ document.getElementById('calculateBtn').onclick = async () => {
 
 function renderResults(dist, price, name, phone, pick, drop, drivers) {
     const list = document.getElementById('driverList');
-    // STRATEGY: Define your commission rate here (e.g., 15% = 0.15)
     const COMMISSION_RATE = 0.15; 
     const mkShare = Math.floor(price * COMMISSION_RATE);
     const driverShare = price - mkShare;
@@ -133,9 +134,8 @@ function renderResults(dist, price, name, phone, pick, drop, drivers) {
 
 // --- SECTION 5: DISPATCH (WhatsApp Bridge) ---
 window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick, drop, dist) => {
-    // Calculate financial splits for database logging
-    const commission = Math.floor(price * 0.15); // 15% LifTruck Fee
-    const driverShare = price - commission;      // 85% Driver Take-home
+    const commission = Math.floor(price * 0.15); 
+    const driverShare = price - commission;      
     
     const bookingPayload = { 
         type: "newBooking",
@@ -148,33 +148,31 @@ window.confirmBooking = async (dName, dModel, dPhone, price, cName, cPhone, pick
         driverPhone: dPhone, 
         distance: dist, 
         totalPrice: price,
-        driverCut: driverShare,  // Sent to Column L
-        platformFee: commission  // Sent to Column M
+        driverCut: driverShare,  
+        platformFee: commission  
     };
     
-    // Save to Google Sheet
+    // Save transaction seamlessly to Google Sheet registry row
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(bookingPayload) });
 
-const msg = encodeURIComponent(
-    `*NEW BOOKING REQUEST*\n` +
-    `----------------------\n` +
-    `Client: ${cName} (${cPhone})\n` +
-    `Route: ${pick} to ${drop}\n` +
-    `Distance: ${dist} KM\n\n` +
-    `*FINANCIAL BREAKDOWN*\n` +
-    `Total Price: KES ${price}\n` +
-    `Driver Payout: KES ${driverTakehome}\n` +
-    `LifTruck Fee (MK): KES ${commission}\n\n` +
-    `*ASSIGNED FLEET*\n` +
-    `Vehicle: ${dModel}\n` +
-    `Driver: ${dName} (${dPhone})`
-);
+    // FIX: Swapped out 'driverTakehome' for 'driverShare' to resolve execution crash
+    const msg = encodeURIComponent(
+        `*NEW BOOKING REQUEST*\n` +
+        `----------------------\n` +
+        `Client: ${cName} (${cPhone})\n` +
+        `Route: ${pick} to ${drop}\n` +
+        `Distance: ${dist} KM\n\n` +
+        `*FINANCIAL BREAKDOWN*\n` +
+        `Total Price: KES ${price}\n` +
+        `Driver Payout: KES ${driverShare}\n` +
+        `LifTruck Fee (MK): KES ${commission}\n\n` +
+        `*ASSIGNED FLEET*\n` +
+        `Vehicle: ${dModel}\n` +
+        `Driver: ${dName} (${dPhone})`
+    );
     
-    
-
     window.location.href = `https://wa.me/${MK_WHATSAPP}?text=${msg}`;
 };
-
 
 // --- SECTION 6: DRIVER REGISTRATION ---
 document.getElementById('driverForm').onsubmit = async (e) => {
@@ -190,7 +188,6 @@ document.getElementById('driverForm').onsubmit = async (e) => {
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(driverData) });
 
-    // 2. The "Lawyer-Level" WhatsApp Checklist
     const checklist = [
         "✅ National ID (Front/Back)",
         "✅ Valid Driving License",
@@ -229,7 +226,7 @@ async function loadDashboard() {
                 <div class="flex justify-between items-center p-3 border-b text-xs bg-white mb-2 rounded-lg">
                     <div>
                         <p class="font-bold">${b[3]} → ${b[4]}</p>
-                        <p class="text-[10px] text-gray-400 italic">${b[6]}</p>
+                        <p class="text-[10px] text-gray-400 italic">${b[6]} KM</p>
                     </div>
                     <span class="${color} uppercase font-black">${b[10]}</span>
                 </div>
