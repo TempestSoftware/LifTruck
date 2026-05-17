@@ -65,6 +65,11 @@ document.getElementById('calculateBtn').onclick = async () => {
         const searchPick = pick.toLowerCase().includes("kenya") ? pick : `${pick}, Kiambu, Nairobi, Kenya`;
         const searchDrop = drop.toLowerCase().includes("kenya") ? drop : `${drop}, Kiambu, Nairobi, Kenya`;
 
+        // STRATEGY FIX: Add custom User-Agent identify options to prevent API server blockades
+        const apiHeaders = {
+            "User-Agent": "LifTruckLogisticsEngine/1.0 (contact: accounting_practice_dev)"
+        };
+
         const [r1, r2] = await Promise.all([
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchPick)}`),
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchDrop)}`)
