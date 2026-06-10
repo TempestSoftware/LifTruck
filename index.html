@@ -3,170 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifTruck | Professional Logistics</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>SwiftHaul Logistics | Reliable On-Demand Truck & Cargo Transport Kenya</title>
+    <meta name="description" content="Get instant cargo hauling and truck transport quotes across Kenya. SwiftHaul connects clients with verified drivers safely, transparently, and efficiently.">
+    <meta name="keywords" content="truck delivery Kenya, cargo transport Thika, hire pickup Nairobi, logistics portal, reliable haulers Kenya">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://swifthaul.vercel.app">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        .purple-gradient { background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); }
-        .input-field { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.2s; background: #fff; }
-        .input-field:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
-        .tab-active { border-bottom: 4px solid #7c3aed; color: #4c1d95; font-weight: 800; }
-        .hidden { display: none; }
+        .pac-container { border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; z-index: 9999 !important; }
+        .tab-btn.active { border-color: #1e40af; color: #1e40af; background-color: #eff6ff; }
     </style>
 </head>
-<body class="bg-gray-50 pb-20">
+<body class="bg-gray-50 min-h-screen text-gray-800 antialiased font-sans">
 
-    <header class="bg-white p-4 shadow-sm sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="bg-purple-900 text-white p-2 rounded-lg font-bold">LT</div>
-                <span class="text-xl font-black text-purple-900 uppercase italic tracking-tighter">LifTruck</span>
-            </div>
-            <div class="flex space-x-6 text-sm uppercase tracking-widest text-gray-400 font-bold">
-                <button id="tabBook" class="pb-1 tab-active" onclick="window.switchTab('book')">Client</button>
-                <button id="tabDrive" class="pb-1" onclick="window.switchTab('drive')">Driver</button>
+    <nav class="bg-blue-900 text-white shadow-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="font-black text-xl tracking-tight text-white">SWIFTHAUL LOGISTICS</div>
+            <div class="flex flex-wrap gap-2 text-xs font-bold">
+                <button onclick="switchView('clientView')" class="px-3 py-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition cursor-pointer">Client Booking</button>
+                <button onclick="switchView('trackingView')" class="px-3 py-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition cursor-pointer">Track Order</button>
+                <button onclick="switchView('driverRegView')" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg transition cursor-pointer">Driver Onboarding</button>
+                <button onclick="switchView('legalView')" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition cursor-pointer">How It Works & Terms</button>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <section id="clientSection" class="max-w-4xl mx-auto p-6">
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
-            <div class="purple-gradient p-8 text-white text-center">
-                <h1 class="text-2xl font-bold">Move Goods with Ease</h1>
-                <p class="text-purple-100 mt-1 italic text-sm text-opacity-80">Instant rates for Thika, Nairobi & Beyond</p>
-            </div>
+    <main class="max-w-6xl mx-auto p-4 md:p-8">
 
-            <div class="p-8 space-y-6">
+        <div id="clientView" class="view-panel space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-black text-gray-900 mb-4 border-b pb-2">1. Request Transport Services</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Your Name</label>
-                        <input type="text" id="clientName" class="input-field" placeholder="Full Name">
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Your Name</label>
+                        <input type="text" id="clientName" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="Full Name">
                     </div>
                     <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Phone Number</label>
-                        <input type="tel" id="clientPhone" class="input-field" placeholder="0712 345 678">
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">M-Pesa Phone Number</label>
+                        <input type="text" id="clientPhone" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="e.g. 0712345678">
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Pickup Point</label>
-                        <input type="text" id="pickup" class="input-field" placeholder="e.g., Section 9, Thika">
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Pickup Point</label>
+                        <input type="text" id="pickup" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="Search town or landmark...">
                     </div>
                     <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Destination</label>
-                        <input type="text" id="dropoff" class="input-field" placeholder="e.g., Juja City Mall">
-                    </div>
-                    
-                    <div class="md:col-span-2 bg-purple-50 rounded-2xl p-4 border border-purple-100 mt-2">
-                        <div class="flex items-start space-x-2">
-                            <span class="text-base">💡</span>
-                            <div class="text-[11px] text-purple-900 font-medium leading-relaxed">
-                                <span class="font-black uppercase tracking-wider text-purple-700 block mb-1">How to enter locations successfully:</span>
-                                For an instant accurate price, use a known town, road, stage, or major landmark (e.g., <span class="font-bold bg-white px-1 rounded border border-purple-200">Chania Stage, Thika</span> or <span class="font-bold bg-white px-1 rounded border border-purple-200">National Archives, Nairobi</span>). 
-                                <span class="block mt-1 text-purple-700 font-semibold">Note: If your specific building or plot isn't found, simply use the nearest well-known center or fuel station!</span>
-                            </div>
-                        </div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Drop-off Point</label>
+                        <input type="text" id="dropoff" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="Search town or landmark...">
                     </div>
                 </div>
-
-                <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Cargo Class</label>
-                    <select id="weightSelect" class="input-field font-medium text-gray-700">
-                        <option value="small">Small (Bike/Probox - Up to 50kg)</option>
-                        <option value="medium" selected>Medium (Van/Pickup - Up to 500kg)</option>
-                        <option value="large">Large (Light Truck - Up to 2 Tons)</option>
-                        <option value="heavy">Heavy (Lorry - Over 2 Tons)</option>
+                <div class="mt-4">
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Select Transport Category</label>
+                    <select id="weightSelect" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-medium">
+                        <option value="small">Small Cargo (Bike / Probox / Pickup)</option>
+                        <option value="medium">Medium Cargo (3-Ton Van / Canter)</option>
+                        <option value="large">Large Cargo (7-Ton Light Truck)</option>
+                        <option value="heavy">Heavy Cargo (10+ Ton Lorry / Trailer)</option>
                     </select>
                 </div>
-                <button id="calculateBtn" class="w-full purple-gradient text-white font-black py-4 rounded-2xl shadow-lg hover:brightness-110 transition">
-                    CALCULATE RATE & FIND DRIVERS
-                </button>
+                <button id="calculateBtn" class="w-full bg-blue-600 text-white font-bold p-4 rounded-xl mt-6 cursor-pointer hover:bg-blue-700 transition">Analyze Route & Compute Invoice</button>
+            </div>
+
+            <div id="resultsWrapper" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2">Trip Routing Ledger</h3>
+                    <div class="bg-blue-50 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-blue-500 uppercase">Routed Driving Distance</div>
+                        <div id="distanceOutput" class="text-2xl font-black text-blue-900">0.0 KM</div>
+                        <p class="text-[10px] text-blue-600 mt-1">*Includes real-world road curvature buffer and category protection.</p>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-emerald-600 uppercase">Total Invoice (VAT Inclusive)</div>
+                        <div id="priceOutput" class="text-2xl font-black text-emerald-900">KES 0</div>
+                    </div>
+                    <button id="payMpesaBtn" class="w-full bg-emerald-600 text-white font-bold p-4 rounded-xl cursor-pointer hover:bg-emerald-700 transition">Confirm Booking via M-Pesa Buy Goods</button>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2">Available Fleet Matching</h3>
+                    <div class="overflow-x-auto mt-2">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b text-gray-400 font-bold uppercase"><th class="pb-2">Driver</th><th class="pb-2">Vehicle</th><th class="pb-2 text-right">Status</th></tr>
+                            </thead>
+                            <tbody id="driverTableBody" class="divide-y divide-gray-100 font-medium text-gray-700"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="driverList" class="mt-8 space-y-4"></div>
-
-        <div class="mt-10 p-6 bg-white rounded-3xl shadow-xl border border-purple-100">
-            <h3 class="text-sm font-black text-purple-900 mb-4 uppercase tracking-widest">Live Activity</h3>
-            <div id="clientDashboard" class="space-y-3"></div>
-            <p class="text-center text-[10px] text-gray-400 mt-6 font-medium">
-                Protected by <a href="javascript:void(0)" onclick="window.openTerms('client')" class="text-purple-700 underline">Client Terms</a>
-            </p>
-        </div>
-    </section>
-
-    <section id="driverSection" class="max-w-4xl mx-auto p-6 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-purple-100">
-            <div class="bg-indigo-950 p-8 text-white">
-                <h2 class="text-2xl font-bold italic">Join the Fleet</h2>
-                <p class="text-indigo-200 mt-1">Submit details for verification.</p>
-            </div>
-            <form id="driverForm" class="p-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Full Name</label>
-                        <input type="text" id="dName" placeholder="e.g. John Doe" class="input-field" required>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">WhatsApp Phone</label>
-                        <input type="tel" id="dPhone" placeholder="e.g. 0712345678" class="input-field" required>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Vehicle Plate</label>
-                        <input type="text" id="dPlate" placeholder="e.g. KDA 123X" class="input-field" required>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Vehicle Model</label>
-                        <input type="text" id="dModel" placeholder="e.g. Toyota Probox" class="input-field" required>
-                    </div>
-                </div>
-
+        <div id="trackingView" class="view-panel hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 max-w-xl mx-auto">
+            <h2 class="text-xl font-black text-gray-900 mb-4 border-b pb-2">Track Cargo Consignment</h2>
+            <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Cargo Category</label>
-                    <select id="dVehType" class="input-field font-medium text-gray-700">
-                        <option value="small">Small (Bike/Probox)</option>
-                        <option value="medium" selected>Medium (Van/Pickup)</option>
-                        <option value="large">Large (Light Truck)</option>
-                        <option value="heavy">Heavy (Lorry)</option>
-                    </select>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Enter Phone Number Used to Book</label>
+                    <input type="text" id="trackPhone" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="e.g. 0712345678">
                 </div>
+                <button id="trackBtn" class="w-full bg-blue-900 text-white font-bold p-3 rounded-xl cursor-pointer">Query System Status</button>
+                <div id="trackingResult" class="hidden mt-4 p-4 border rounded-xl bg-gray-50"></div>
+            </div>
+        </div>
+
+        <div id="driverRegView" class="view-panel hidden max-w-2xl mx-auto space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-black text-gray-900 mb-2 border-b pb-2">Apply to Join Transport Fleet</h2>
                 
-                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-6">
-                    <h4 class="text-xs font-black text-indigo-900 uppercase mb-2">Verification Checklist</h4>
-                    <ul class="text-[10px] text-indigo-700 space-y-1 font-medium">
-                        <li>• You must have a valid Smartphone with WhatsApp</li>
-                        <li>• Have your ID & Driving License ready to upload</li>
-                        <li>• Vehicle must have valid Insurance & Inspection</li>
-                    </ul>
+                <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-900 text-xs font-medium mb-4 space-y-1">
+                    <div class="font-bold text-sm text-amber-950 uppercase mb-1">📋 Mandatory Verification Checklist</div>
+                    <div>• You must have a valid Smartphone with WhatsApp active.</div>
+                    <div>• Have your National Identification Card & Driving License ready to upload.</div>
+                    <div>• Your Vehicle must have valid commercial Insurance & NTSA Inspection certificates.</div>
                 </div>
-                <button type="submit" class="w-full bg-indigo-900 text-white font-bold py-4 rounded-2xl shadow-lg hover:brightness-110 transition">
-                    Register as Driver
-                </button>
-                <p class="text-center text-xs text-gray-500">
-                    Subject to <a href="javascript:void(0)" onclick="window.openTerms('driver')" class="text-indigo-700 underline font-bold">Partner Terms</a>
-                </p>
-            </form>
-        </div>
-    </section>
 
-    <div id="termsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="purple-gradient p-6 text-white flex justify-between items-center">
-                <h2 id="modalTitle" class="text-lg font-bold italic uppercase">Legal Vault</h2>
-                <button onclick="window.closeTerms()" class="text-white text-xl font-bold hover:rotate-90 transition duration-200">✕</button>
-            </div>
-            <div id="modalContent" class="p-8 overflow-y-auto bg-gray-50 leading-relaxed text-gray-800 text-sm"></div>
-            <div class="p-4 border-t bg-white">
-                <button onclick="window.closeTerms()" class="w-full purple-gradient text-white py-4 rounded-2xl font-black shadow-lg hover:brightness-110 transition">
-                    I ACCEPT TERMS
-                </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Full Legal Name</label>
+                        <input type="text" id="driverName" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="As seen on ID">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Active WhatsApp Mobile Number</label>
+                        <input type="text" id="driverPhone" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="e.g. 0712345678">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Vehicle License Plate</label>
+                        <input type="text" id="driverPlate" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl" placeholder="e.g. KCD 123X">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Vehicle Weight Class Allocation</label>
+                        <select id="driverCat" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-medium">
+                            <option value="small">Small Cargo (Bike / Probox / Pickup)</option>
+                            <option value="medium">Medium Cargo (3-Ton Van / Canter)</option>
+                            <option value="large">Large Cargo (7-Ton Light Truck)</option>
+                            <option value="heavy">Heavy Cargo (10+ Ton Lorry / Trailer)</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="regDriverBtn" class="w-full bg-emerald-600 text-white font-bold p-4 rounded-xl mt-6 cursor-pointer hover:bg-emerald-700 transition">Submit Fleet Application Profile</button>
             </div>
         </div>
-    </div>
 
-    <script type="module" src="app.js"></script>
+        <div id="legalView" class="view-panel hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-black text-gray-900 mb-2">Operational Framework Disclosures</h2>
+                <p class="text-xs text-gray-500 mb-4">Published in compliance with localized marketplace transparency directives.</p>
+                <div class="text-sm text-gray-700 space-y-3 font-medium leading-relaxed">
+                    <p><strong>1. Request and Metric Synthesis:</strong> Users specify spatial pickup points and destination targets through secure geocoding infrastructure APIs. The engine converts geographic positions into linear navigational paths.</p>
+                    <p><strong>2. Distance Overlay Mechanics:</strong> Path calculations are augmented with a non-linear curvature buffer scaling coefficient. This model offsets variations between direct map vectors and real-world infrastructure constraints, computing a finalized total billing figure before assigning jobs.</p>
+                    <p><strong>3. Dispatch and Allocation Settlement:</strong> Confirmed requests query available vehicle fleets matching the necessary cargo volume class. Driver variables remain tokenized to safeguard competitive marketplace equity.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 max-h-96 overflow-y-auto">
+                    <h3 class="text-lg font-black text-blue-900 border-b pb-2 mb-4">Merchant Service Terms (Drivers)</h3>
+                    <div class="space-y-4 text-xs text-gray-600 leading-relaxed">
+                        <p class="font-bold text-red-600 underline">Last updated: 5/6/2026</p>
+                        <h4 class="font-bold text-gray-900">1. Introduction</h4>
+                        <p>These Terms & Conditions apply to all truck owners, drivers, or transport service providers ("Drivers") who use the Platform to accept and complete delivery jobs. By registering, you agree to these terms.</p>
+                        <h4 class="font-bold text-gray-900">2. Relationship Between Driver and Platform</h4>
+                        <p>You are an independent contractor, not an employee. You provide transport services directly to the client. The Platform only facilitates matching and payment.</p>
+                        <h4 class="font-bold text-gray-900">3. Driver Eligibility</h4>
+                        <p>To join, Drivers must: Upload valid ID, Provide a valid driving license, Provide proof of vehicle ownership or authorization, Submit insurance documents. Providing false documents will lead to permanent suspension.</p>
+                        <h4 class="font-bold text-gray-900">4. Obligations of Drivers</h4>
+                        <p>Drivers agree to: Transport goods safely, Follow all traffic laws, Handle cargo with care, Arrive on time for pickup.</p>
+                        <h4 class="font-bold text-gray-900">5. Responsibility for Goods</h4>
+                        <p>You, the Driver, accept full responsibility for goods once handed over to you. You may be held liable for theft due to negligence, loss of goods, or damage caused by improper handling.</p>
+                        <h4 class="font-bold text-gray-900">6. Prohibited Conduct</h4>
+                        <p>Drivers may NOT: Carry unauthorized passengers, Demand extra payment outside the Platform, or Use alcohol/drugs while working.</p>
+                        <h4 class="font-bold text-gray-900">7. Pricing and Earnings</h4>
+                        <p>The Platform sets or suggests trip prices. Drivers earn the trip amount minus platform commission paid through mobile money.</p>
+                        <h4 class="font-bold text-gray-900">8. Insurance Requirements</h4>
+                        <p>Drivers must maintain valid motor insurance and report accidents immediately.</p>
+                        <h4 class="font-bold text-gray-900">9. Liability</h4>
+                        <p>Drivers are liable for goods damaged through negligence. The Platform does not cover losses unless the client purchased insurance.</p>
+                        <h4 class="font-bold text-gray-900">10. Account Suspension</h4>
+                        <p>Account may be suspended for fraud, overcharging, mishandling cargo, or illegal activities.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 max-h-96 overflow-y-auto">
+                    <h3 class="text-lg font-black text-blue-900 border-b pb-2 mb-4">User Acceptance Terms (Clients)</h3>
+                    <div class="space-y-4 text-xs text-gray-600 leading-relaxed">
+                        <p class="font-bold text-red-600 underline">Last updated: 5/6/2026</p>
+                        <h4 class="font-bold text-gray-900">1. Introduction</h4>
+                        <p>These Terms & Conditions govern the use of the platform that connects clients ("Users") with independent truck owners. By using the Platform, you agree to these terms.</p>
+                        <h4 class="font-bold text-gray-900">2. Service Description</h4>
+                        <p>The Platform is not a transporter. It does not own vehicles or employ Drivers. It only connects Users with Drivers.</p>
+                        <h4 class="font-bold text-gray-900">3. Booking Transport Services</h4>
+                        <p>Users must provide accurate information (weight, destination). Misleading information may result in additional charges.</p>
+                        <h4 class="font-bold text-gray-900">4. Payments</h4>
+                        <p>All payments must be made through the Platform (M-Pesa/Card). Payment confirms acceptance of service.</p>
+                        <h4 class="font-bold text-gray-900">5. User Responsibilities</h4>
+                        <p>You agree to provide correct cargo details and ensure goods are properly packaged. Improper packaging leads to denial of compensation.</p>
+                        <h4 class="font-bold text-gray-900">6. Liability for Goods</h4>
+                        <p>The Platform is not liable for damage, theft, loss, or delays. The Driver is primarily responsible once in possession of goods.</p>
+                        <h4 class="font-bold text-gray-900">7. Insurance</h4>
+                        <p>Clients may purchase optional cargo insurance. If declined, they accept full risk for theft or damage.</p>
+                        <h4 class="font-bold text-gray-900">8. Cancellation Policy</h4>
+                        <p>Once a Driver is assigned, cancellation may attract a fee.</p>
+                        <h4 class="font-bold text-gray-900">9. Dispute Resolution</h4>
+                        <p>Disputes must be raised within 24–48 hours of delivery through the Platform support system.</p>
+                        <h4 class="font-bold text-gray-900">10. Prohibited Goods</h4>
+                        <p>Illegal drugs, weapons, bulk cash, and hazardous materials are strictly prohibited.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-400 p-6 rounded-2xl text-xs space-y-3 leading-relaxed border border-gray-800">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">🔒 Statutory Data Privacy Disclosure (Kenya Data Protection Act 2019)</h3>
+                <p>SwiftHaul Logistics acts as a data controller under local regulatory statutes. We record personal identifiers including customer transactional mobile numbers, spatial geocoding coordinates, and transport asset identification rows strictly to execute logistical transport matching contracts.</p>
+                <p>Information matrices are archived securely within encrypted server arrays and are never distributed to external marketing aggregators. Users hold statutory rights to query historical logs, request document corrections, or demand systemic profile deletion by contacting our designated privacy office.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
+    <script src="app.js"></script>
 </body>
 </html>
